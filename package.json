@@ -1,14 +1,19 @@
 {
-  "name": "ReliefRoot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "name": "reliefroot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ReliefRoot monorepo",
+
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.5.3"
-  },
-  "private": true
+  }
 }
