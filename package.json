@@ -1,20 +1,35 @@
 {
-  "name": "reliefroot",
-  "version": "0.1.0",
-  "private": true,
-  "description": "ReliefRoot monorepo",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "lint": "eslint"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.6.0",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.62.0"
-  }
+    "name": "reliefroot",
+    "version": "0.1.0",
+    "private": true,
+    "description": "ReliefRoot monorepo",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "lint": "eslint",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "prepare": "husky"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.6.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.0.8",
+        "prettier": "^3.9.0",
+        "typescript": "^5.5.3",
+        "typescript-eslint": "^8.62.0"
+    },
+    "lint-staged": {
+        "*.{js,ts,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,md,yml,yaml}": [
+            "prettier --write"
+        ]
+    }
 }

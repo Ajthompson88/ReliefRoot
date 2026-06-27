@@ -33,19 +33,19 @@ Documentation should:
 
 # Documentation Structure
 
-| Folder | Purpose | Naming Standard |
-|---------|---------|-----------------|
-| adr | Architecture Decision Records | `0001-topic-name.md` |
-| api | API documentation | `topic-name.md` |
-| architecture | System architecture | `topic-name.md` |
-| cheat-sheets | Quick reference guides | `topic-name.md` |
-| diagrams | Flowcharts and Excalidraw exports | `YYYY-MM-DD-topic-name.ext` |
-| erd | Entity Relationship Diagrams | `v#-topic-name.ext` |
-| meeting-notes | Development session notes | `YYYY-MM-DD-topic-name.md` |
-| research | Research and technical references | `topic-name.md` |
-| screenshots | Project milestone screenshots | `YYYY-MM-DD-##-description.png` |
-| sprints | Sprint planning and retrospectives | `sprint-##-topic.md` |
-| standards | Project standards | `topic-name.md` |
+| Folder        | Purpose                            | Naming Standard                 |
+| ------------- | ---------------------------------- | ------------------------------- |
+| adr           | Architecture Decision Records      | `0001-topic-name.md`            |
+| api           | API documentation                  | `topic-name.md`                 |
+| architecture  | System architecture                | `topic-name.md`                 |
+| cheat-sheets  | Quick reference guides             | `topic-name.md`                 |
+| diagrams      | Flowcharts and Excalidraw exports  | `YYYY-MM-DD-topic-name.ext`     |
+| erd           | Entity Relationship Diagrams       | `v#-topic-name.ext`             |
+| meeting-notes | Development session notes          | `YYYY-MM-DD-topic-name.md`      |
+| research      | Research and technical references  | `topic-name.md`                 |
+| screenshots   | Project milestone screenshots      | `YYYY-MM-DD-##-description.png` |
+| sprints       | Sprint planning and retrospectives | `sprint-##-topic.md`            |
+| standards     | Project standards                  | `topic-name.md`                 |
 
 ---
 

@@ -14,15 +14,15 @@ The purpose of these standards is to:
 
 ## Standards Index
 
-| Document | Purpose |
-|----------|---------|
-| `branching-strategy.md` | Defines the Git branching model and merge workflow. |
-| `coding-standards.md` | Establishes coding style, formatting, and best practices. |
-| `commit-conventions.md` | Defines the commit message format using Conventional Commits. |
-| `documentation-standards.md` | Defines how project documentation should be written, organized, and maintained. |
-| `naming-conventions.md` | Defines naming standards for files, classes, variables, database objects, and other project assets. |
-| `testing-standards.md` | Describes the project's testing philosophy, test organization, and coverage expectations. |
-| `versioning-strategy.md` | Defines the project's Semantic Versioning strategy and release process. |
+| Document                     | Purpose                                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- |
+| `branching-strategy.md`      | Defines the Git branching model and merge workflow.                                                 |
+| `coding-standards.md`        | Establishes coding style, formatting, and best practices.                                           |
+| `commit-conventions.md`      | Defines the commit message format using Conventional Commits.                                       |
+| `documentation-standards.md` | Defines how project documentation should be written, organized, and maintained.                     |
+| `naming-conventions.md`      | Defines naming standards for files, classes, variables, database objects, and other project assets. |
+| `testing-standards.md`       | Describes the project's testing philosophy, test organization, and coverage expectations.           |
+| `versioning-strategy.md`     | Defines the project's Semantic Versioning strategy and release process.                             |
 
 ## Guiding Principle
 

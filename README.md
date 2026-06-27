@@ -24,18 +24,18 @@ ReliefRoot is being developed as a personal analytics platform capable of tracki
 
 Long-term goals include:
 
-* Cultivation tracking
-* Cultivar database
-* Breeder information
-* Cannabinoid profiles
-* Terpene profiles
-* COA (Certificate of Analysis) data
-* Session tracking
-* Personal effect tracking
-* Community analytics
-* Data-driven recommendations
-* Trend visualization
-* Grow journals
+- Cultivation tracking
+- Cultivar database
+- Breeder information
+- Cannabinoid profiles
+- Terpene profiles
+- COA (Certificate of Analysis) data
+- Session tracking
+- Personal effect tracking
+- Community analytics
+- Data-driven recommendations
+- Trend visualization
+- Grow journals
 
 ---
 
@@ -47,20 +47,20 @@ Current work focuses on establishing a professional software engineering foundat
 
 Completed:
 
-* Professional monorepo structure
-* Repository organization
-* Documentation architecture
-* Development standards
-* Git workflow
-* Project planning
+- Professional monorepo structure
+- Repository organization
+- Documentation architecture
+- Development standards
+- Git workflow
+- Project planning
 
 Upcoming:
 
-* Database design
-* Entity Relationship Diagrams (ERDs)
-* Database schema
-* Backend API
-* Frontend application
+- Database design
+- Entity Relationship Diagrams (ERDs)
+- Database schema
+- Backend API
+- Frontend application
 
 ---
 
@@ -84,13 +84,13 @@ Project documentation is organized under the `docs/` directory.
 
 Highlights include:
 
-* Architecture Decision Records (ADRs)
-* System Architecture
-* ERDs
-* Sprint Planning
-* Research
-* Development Standards
-* Project Screenshots
+- Architecture Decision Records (ADRs)
+- System Architecture
+- ERDs
+- Sprint Planning
+- Research
+- Development Standards
+- Project Screenshots
 
 ---
 
@@ -98,29 +98,29 @@ Highlights include:
 
 ## Frontend
 
-* Next.js
-* React
-* TypeScript
-* Tailwind CSS
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
 
 ## Backend
 
-* Node.js
-* Express
-* TypeScript
+- Node.js
+- Express
+- TypeScript
 
 ## Database
 
-* PostgreSQL
-* Prisma ORM
+- PostgreSQL
+- Prisma ORM
 
 ## Tooling
 
-* GitHub Actions
-* ESLint
-* Prettier
-* Husky
-* lint-staged
+- GitHub Actions
+- ESLint
+- Prettier
+- Husky
+- lint-staged
 
 ---
 
@@ -130,13 +130,13 @@ ReliefRoot is intentionally being built using professional software engineering 
 
 The project emphasizes:
 
-* Clean architecture
-* Documentation-first development
-* Database-first design
-* Conventional Commits
-* Semantic Versioning
-* Automated testing
-* Continuous Integration
+- Clean architecture
+- Documentation-first development
+- Database-first design
+- Conventional Commits
+- Semantic Versioning
+- Automated testing
+- Continuous Integration
 
 ---
 
@@ -144,27 +144,27 @@ The project emphasizes:
 
 ## Sprint 0
 
-* Repository foundation
-* Development standards
-* Project documentation
+- Repository foundation
+- Development standards
+- Project documentation
 
 ## Sprint 1
 
-* Database design
-* ERDs
-* Initial schema
+- Database design
+- ERDs
+- Initial schema
 
 ## Sprint 2
 
-* Backend API
-* Authentication
-* Core business logic
+- Backend API
+- Authentication
+- Core business logic
 
 ## Sprint 3
 
-* Frontend MVP
-* User workflows
-* Analytics foundation
+- Frontend MVP
+- User workflows
+- Analytics foundation
 
 ---
 

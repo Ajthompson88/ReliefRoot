@@ -8,10 +8,10 @@
 
 # Objectives
 
-* Continue establishing the professional project foundation for ReliefRoot.
-* Finalize the repository organization.
-* Create documentation standards.
-* Prepare the project for Sprint 1.
+- Continue establishing the professional project foundation for ReliefRoot.
+- Finalize the repository organization.
+- Create documentation standards.
+- Prepare the project for Sprint 1.
 
 ---
 
@@ -19,17 +19,17 @@
 
 ## Repository
 
-* Completed the professional monorepo scaffold.
-* Configured the repository structure.
-* Cleaned the Git repository.
-* Configured `.gitignore`.
-* Removed WebStorm `.idea` files from Git tracking.
+- Completed the professional monorepo scaffold.
+- Configured the repository structure.
+- Cleaned the Git repository.
+- Configured `.gitignore`.
+- Removed WebStorm `.idea` files from Git tracking.
 
 ## Documentation
 
-* Established the `docs/` architecture.
-* Created the `development-standards/` directory.
-* Added:
+- Established the `docs/` architecture.
+- Created the `development-standards/` directory.
+- Added:
 
       * Branching Strategy
       * Coding Standards
@@ -38,35 +38,36 @@
       * Naming Conventions
       * Testing Standards
       * Versioning Strategy
-* Completed the initial project `README.md`.
+
+- Completed the initial project `README.md`.
 
 ## Project History
 
-* Created the project milestone screenshot archive.
-* Established documentation philosophy.
-* Adopted Conventional Commits.
-* Established a documentation organization strategy for future development.
+- Created the project milestone screenshot archive.
+- Established documentation philosophy.
+- Adopted Conventional Commits.
+- Established a documentation organization strategy for future development.
 
 ---
 
 # Decisions Made
 
-* ReliefRoot will be developed using a **documentation-first** approach.
-* Project documentation will be organized into dedicated folders based on purpose.
-* Development standards will live under `docs/development-standards/`.
-* Meeting notes will serve as the project's engineering journal.
-* Sprint documents will summarize overall sprint objectives and outcomes rather than daily progress.
-* Project milestones will be preserved using dated screenshots.
-* The project will prioritize professional software engineering practices over rapid feature development.
+- ReliefRoot will be developed using a **documentation-first** approach.
+- Project documentation will be organized into dedicated folders based on purpose.
+- Development standards will live under `docs/development-standards/`.
+- Meeting notes will serve as the project's engineering journal.
+- Sprint documents will summarize overall sprint objectives and outcomes rather than daily progress.
+- Project milestones will be preserved using dated screenshots.
+- The project will prioritize professional software engineering practices over rapid feature development.
 
 ---
 
 # Challenges
 
-* Determined the appropriate separation between meeting notes and sprint documentation.
-* Resolved Git tracking issues related to WebStorm's `.idea` directory.
-* Refined the documentation structure to avoid duplicated information.
-* Established consistent standards for documentation and repository organization.
+- Determined the appropriate separation between meeting notes and sprint documentation.
+- Resolved Git tracking issues related to WebStorm's `.idea` directory.
+- Refined the documentation structure to avoid duplicated information.
+- Established consistent standards for documentation and repository organization.
 
 ---
 
@@ -74,20 +75,20 @@
 
 Finish Sprint 0 by completing:
 
-* npm workspaces
-* ESLint
-* Prettier
-* Husky
-* lint-staged
-* GitHub Actions
+- npm workspaces
+- ESLint
+- Prettier
+- Husky
+- lint-staged
+- GitHub Actions
 
 After Sprint 0 is complete:
 
-* Begin database design.
-* Create Entity Relationship Diagrams (ERDs).
-* Design the initial database schema.
-* Initialize Prisma.
-* Build the PostgreSQL foundation.
+- Begin database design.
+- Create Entity Relationship Diagrams (ERDs).
+- Design the initial database schema.
+- Initialize Prisma.
+- Build the PostgreSQL foundation.
 
 ---
 
