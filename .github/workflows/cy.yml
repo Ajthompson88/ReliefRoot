@@ -1,0 +1,39 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+            # - develop
+            # - testing
+    pull_request:
+        branches:
+            - main
+            # - develop
+            # - testing
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Check Formatting
+              run: npm run format:check
+
+            - name: Build
+              run: npm run build
