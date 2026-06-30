@@ -12,7 +12,12 @@
         "lint": "eslint",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "prepare": "husky"
+        "prepare": "husky",
+        "docker:up": "docker compse -f docker/docker-compose.yml up -d",
+        "docker:down": "docker compose -f docker/docker-compose.yml down",
+        "docker:restart": "docker compose -f docker/docker-compose.yml down && docker compose -f docker/docker-compose.yml up -d",
+        "docker:logs": "docker compose -f docker/docker-compose.yml logs -f",
+        "docker:ps": "docker compose -f docker/docker-compose.yml ps"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
