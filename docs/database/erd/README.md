@@ -1,29 +1,47 @@
-# ReliefRoot ERDs
+# ReliefRoot Database ERDs
 
-## Legend
+Entity Relationship Diagrams (ERDs) for the ReliefRoot database schema.
 
-- erd_legend.md
+---
 
-## Core Tables
+## Documentation
 
-- erd_users.md
-- erd_strains.md
-- erd_plants.md
-- erd_products.md
-- erd_sessions.md
+- 📖 [Legend](./erd_legend.md)
 
-## Supporting Tables
+---
 
-- erd_grow_logs.md
-- erd_harvests.md
-- erd_photos.md
-- erd_session_ratings.md
-- erd_effects.md
-- erd_session_effects.md
-- erd_symptoms.md
-- erd_session_symptoms.md
-- erd_coa_tests.md
-- erd_cannabinoids.md
-- erd_coa_cannabinoids.md
-- erd_terpenes.md
-- erd_coa_terpenes.md
+## Core
+
+- 👤 [Users](./erd_users.md)
+- 🌿 [Plants](./erd_plants.md)
+- 🧬 [Strains](./erd_strains.md)
+- 📦 [Products](./erd_products.md)
+- 📝 [Grow Logs](./erd_grow_logs.md)
+- 🌾 [Harvests](./erd_harvests.md)
+
+---
+
+## Consumption
+
+- 💨 [Sessions](./erd_sessions.md)
+- ⭐ [Session Ratings](./erd_session_ratings.md)
+- 😊 [Effects](./erd_effects.md)
+- 🔗 [Session Effects](./erd_session_effects.md)
+- 🩺 [Symptoms](./erd_symptoms.md)
+- 🔗 [Session Symptoms](./erd_session_symptoms.md)
+
+---
+
+## Laboratory
+
+- 🧪 [COA Tests](./erd_coa_tests.md)
+- 🧬 [Cannabinoids](./erd_cannabinoids.md)
+- 🔗 [COA Cannabinoids](./erd_coa_cannabinoids.md)
+- 🌸 [Terpenes](./erd_terpenes.md)
+- 🔗 [COA Terpenes](./erd_coa_terpenes.md)
+
+---
+
+## Media
+
+- 📷 [Photos](./erd_photos.md)
