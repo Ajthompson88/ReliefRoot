@@ -1,0 +1,15 @@
+services:
+    postgres:
+        image: postgres:16
+        container_name: reliefroot-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: reliefroot_dev
+            POSTGRES_USER: reliefroot
+            POSTGRES_PASSWORD: ajttat1024
+            ports:
+                - "5432:5432"
+            volumes:
+                - postgres_data:/var/lib/postgresql/data
+volumes:
+    reliefroot_postgres_data:
