@@ -155,9 +155,10 @@ model Session {
 model Metric {
   id String @id @default(uuid())
 
-  name        String         @unique
-  description String?
-  category    MetricCategory
+  name         String         @unique
+  description  String?
+  category     MetricCategory
+  displayOrder Int            @default(0)
 
   sessionMetrics SessionMetric[]
 
@@ -168,9 +169,10 @@ model Metric {
 model Effect {
   id String @id @default(uuid())
 
-  name        String         @unique
-  description String?
-  category    EffectCategory
+  name         String         @unique
+  description  String?
+  category     EffectCategory
+  displayOrder Int            @default(0)
 
   sessionEffects SessionEffect[]
 
