@@ -35,14 +35,32 @@ enum SessionMethod {
   TINCTURE
 }
 
+enum MetricCategory {
+  PAIN
+  MENTAL
+  SLEEP
+  DIGESTIVE
+  ENERGY
+  MOOD
+  OTHER
+}
+
+enum EffectCategory {
+  POSITIVE
+  NEGATIVE
+  COGNITIVE
+  PHYSICAL
+  SOCIAL
+  OTHER
+}
+
 model Organization {
   id   String @id @default(uuid())
   name String
 
-  users     User[]
-  cultivars Cultivar[]
-  products  Product[]
-  sessions  Session[]
+  users    User[]
+  products Product[]
+  sessions Session[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,20 +89,28 @@ model Cultivar {
   id   String @id @default(uuid())
   name String
 
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
   products Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([organizationId, name])
-  @@index([organizationId])
 }
 
 model Product {
   id String @id @default(uuid())
+
+  name String
+
+  productType     ProductType
+  acquisitionType AcquisitionType
+
+  brand       String?
+  batchNumber String?
+
+  packageWeight Decimal?
+  thcPercent    Decimal?
+  cbdPercent    Decimal?
+  cbgPercent    Decimal?
+  cbnPercent    Decimal?
 
   cultivarId String?
   cultivar   Cultivar? @relation(fields: [cultivarId], references: [id], onDelete: SetNull)
@@ -97,22 +123,94 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([cultivarId])
   @@index([organizationId])
+  @@index([cultivarId])
 }
 
 model Session {
   id String @id @default(uuid())
 
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
 
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  method SessionMethod
+
+  startedAt DateTime
+
+  doseAmount Decimal?
+
+  notes String?
+
+  sessionMetrics SessionMetric[]
+
+  sessionEffects SessionEffect[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  @@index([productId])
-  @@index([organizationId])
+model Metric {
+  id String @id @default(uuid())
+
+  name        String         @unique
+  description String?
+  category    MetricCategory
+
+  sessionMetrics SessionMetric[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Effect {
+  id String @id @default(uuid())
+
+  name        String         @unique
+  description String?
+  category    EffectCategory
+
+  sessionEffects SessionEffect[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SessionMetric {
+  id String @id @default(uuid())
+
+  sessionId String
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  metricId String
+  metric   Metric @relation(fields: [metricId], references: [id], onDelete: Cascade)
+
+  beforeValue Int
+  afterValue  Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([sessionId, metricId])
+  @@index([sessionId])
+  @@index([metricId])
+}
+
+model SessionEffect {
+  id String @id @default(uuid())
+
+  sessionId String
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  effectId String
+  effect   Effect @relation(fields: [effectId], references: [id], onDelete: Cascade)
+
+  intensity Int?
+
+  createdAt DateTime @default(now())
+
+  @@unique([sessionId, effectId])
+  @@index([sessionId])
+  @@index([effectId])
 }
