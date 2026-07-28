@@ -35,4 +35,7 @@ pnpm-debug.log*
 # IDE / editor files
 .idea/
 .vscode/
+
+# Prisma
+/generated/prisma
 EOF

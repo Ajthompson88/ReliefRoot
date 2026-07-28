@@ -17,7 +17,10 @@
         "docker:down": "docker compose -f docker/docker-compose.yml down",
         "docker:restart": "docker compose -f docker/docker-compose.yml down && docker compose -f docker/docker-compose.yml up -d",
         "docker:logs": "docker compose -f docker/docker-compose.yml logs -f",
-        "docker:ps": "docker compose -f docker/docker-compose.yml ps"
+        "docker:ps": "docker compose -f docker/docker-compose.yml ps",
+        "prisma:generate": "prisma generate --schema=database/prisma/schema.prisma",
+        "prisma:migrate": "prisma migrate dev --schema=database/prisma/schema.prisma",
+        "prisma:studio": "prisma studio --schema=database/prisma/schema.prisma"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
@@ -25,6 +28,7 @@
         "husky": "^9.1.7",
         "lint-staged": "^17.0.8",
         "prettier": "^3.9.0",
+        "tsx": "^4.23.1",
         "typescript": "^5.5.3",
         "typescript-eslint": "^8.62.0"
     },
@@ -36,5 +40,9 @@
         "*.{json,md,yml,yaml}": [
             "prettier --write"
         ]
+    },
+    "dependencies": {
+        "@prisma/client": "^7.9.1",
+        "prisma": "^7.9.1"
     }
 }
