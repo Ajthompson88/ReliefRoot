@@ -39,6 +39,80 @@ model Organization {
   id   String @id @default(uuid())
   name String
 
+  users     User[]
+  cultivars Cultivar[]
+  products  Product[]
+  sessions  Session[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model User {
+  id String @id @default(uuid())
+
+  email     String  @unique
+  username  String? @unique
+  firstName String
+  lastName  String?
+
+  role UserRole @default(MEMBER)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model Cultivar {
+  id   String @id @default(uuid())
+  name String
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Product {
+  id String @id @default(uuid())
+
+  cultivarId String?
+  cultivar   Cultivar? @relation(fields: [cultivarId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cultivarId])
+  @@index([organizationId])
+}
+
+model Session {
+  id String @id @default(uuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([organizationId])
 }
