@@ -107,3 +107,40 @@ Organization
 The core database is now capable of representing a complete ReliefRoot session, including the consumed product, global cultivar reference, before-and-after metric scores, and experienced effects.
 
 The next phase should focus on exercising the current data model through the API rather than expanding the schema.
+
+## Development log entry
+
+# Development Log — July 28, 2026
+
+## Summary
+
+Completed the first analytics-ready version of the ReliefRoot database.
+
+The database now supports organizations, users, products, global cultivars, consumption sessions, measurable before-and-after metrics, and experienced effects.
+
+Prisma migrations and seed execution are working successfully against the PostgreSQL Docker container.
+
+## Key Decisions
+
+- Cultivars are global reference records.
+- Products belong to organizations and reference cultivars.
+- Sessions reference products rather than cultivars directly.
+- Metrics use before-and-after values.
+- Effects are recorded separately with optional intensity.
+- Metrics and effects use global reference tables.
+- Categories support filtering, organization, and grouped analytics.
+- Default reference data is inserted through an idempotent Prisma seed script.
+
+## Technical Issues Resolved
+
+- Prisma 7 datasource configuration.
+- Prisma 7 seed configuration.
+- Docker PostgreSQL port conflict.
+- Generated Prisma Client import path.
+- Prisma PostgreSQL driver adapter requirement.
+
+## Stopping Point
+
+The schema, migrations, generated client, and seed workflow are all functioning. Default metrics and effects were verified in Prisma Studio.
+
+The next development session should begin with API-to-Prisma integration.
