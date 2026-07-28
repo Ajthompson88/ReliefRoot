@@ -6,3 +6,39 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum ProductType {
+  FLOWER
+  EDIBLE
+  CONCENTRATE
+  TINCTURE
+  TOPICAL
+  CAPSULE
+}
+
+enum AcquisitionType {
+  PURCHASED
+  HOMEGROWN
+}
+
+enum SessionMethod {
+  SMOKE
+  VAPE
+  EDIBLE
+  DAB
+  TINCTURE
+}
+
+model Organization {
+  id   String @id @default(uuid())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
