@@ -1,7 +1,7 @@
 import prisma from "../lib/prisma.js";
 
-export async function getAllMetrics() {
-    return prisma.metric.findMany({
+export async function getAllEffects() {
+    return prisma.effect.findMany({
         orderBy: {
             displayOrder: "asc",
         },
