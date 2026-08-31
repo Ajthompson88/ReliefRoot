@@ -1,0 +1,2 @@
+ALTER TYPE "MetricCategory"
+RENAME VALUE 'PAIN' TO 'PHYSICAL';

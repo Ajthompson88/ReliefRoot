@@ -1,6 +1,9 @@
-import { PrismaClient } from "../../generated/prisma/client";
 import "dotenv/config";
+
 import { PrismaPg } from "@prisma/adapter-pg";
+
+import { PrismaClient } from "../../apps/api/src/generated/prisma/client";
+import { EffectCategory, MetricCategory } from "../../apps/api/src/generated/prisma/enums";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -22,67 +25,67 @@ async function main() {
         {
             name: "Pain",
             description: "Overall pain level.",
-            category: "PAIN",
+            category: MetricCategory.PHYSICAL,
             displayOrder: 1,
         },
         {
             name: "Muscle Spasms",
             description: "Muscle tightness or spasms.",
-            category: "PAIN",
+            category: MetricCategory.PHYSICAL,
             displayOrder: 2,
         },
         {
             name: "Anxiety",
             description: "Level of anxiety.",
-            category: "MENTAL",
+            category: MetricCategory.MENTAL,
             displayOrder: 3,
         },
         {
             name: "Mood",
             description: "Overall emotional state.",
-            category: "MOOD",
+            category: MetricCategory.MOOD,
             displayOrder: 4,
         },
         {
             name: "Focus",
             description: "Ability to concentrate.",
-            category: "MENTAL",
+            category: MetricCategory.MENTAL,
             displayOrder: 5,
         },
         {
             name: "Energy",
             description: "Energy level.",
-            category: "ENERGY",
+            category: MetricCategory.ENERGY,
             displayOrder: 6,
         },
         {
             name: "Sleepiness",
             description: "Feeling sleepy or drowsy.",
-            category: "SLEEP",
+            category: MetricCategory.SLEEP,
             displayOrder: 7,
         },
         {
             name: "Appetite",
             description: "Level of hunger or appetite.",
-            category: "DIGESTIVE",
+            category: MetricCategory.DIGESTIVE,
             displayOrder: 8,
         },
         {
             name: "Nausea",
             description: "Feeling nauseous.",
-            category: "DIGESTIVE",
+            category: MetricCategory.DIGESTIVE,
             displayOrder: 9,
         },
         {
             name: "Stress",
             description: "Overall stress level.",
-            category: "MENTAL",
+            category: MetricCategory.MENTAL,
             displayOrder: 10,
         },
         {
             name: "Depression",
             description: "Depressive symptoms.",
-            category: "MOOD",
+            category: MetricCategory.MOOD,
             displayOrder: 11,
         },
     ];
@@ -101,61 +104,61 @@ async function main() {
         {
             name: "Relaxed",
             description: "Feeling calm and relaxed.",
-            category: "POSITIVE",
+            category: EffectCategory.POSITIVE,
             displayOrder: 1,
         },
         {
             name: "Euphoric",
             description: "Feeling elevated or blissful.",
-            category: "POSITIVE",
+            category: EffectCategory.POSITIVE,
             displayOrder: 2,
         },
         {
             name: "Creative",
             description: "Enhanced creativity.",
-            category: "COGNITIVE",
+            category: EffectCategory.COGNITIVE,
             displayOrder: 3,
         },
         {
             name: "Focused",
             description: "Improved concentration.",
-            category: "COGNITIVE",
+            category: EffectCategory.COGNITIVE,
             displayOrder: 4,
         },
         {
             name: "Happy",
             description: "Improved happiness.",
-            category: "POSITIVE",
+            category: EffectCategory.POSITIVE,
             displayOrder: 5,
         },
         {
             name: "Talkative",
             description: "More social and talkative.",
-            category: "SOCIAL",
+            category: EffectCategory.SOCIAL,
             displayOrder: 6,
         },
         {
             name: "Hungry",
             description: "Increased appetite.",
-            category: "PHYSICAL",
+            category: EffectCategory.PHYSICAL,
             displayOrder: 7,
         },
         {
             name: "Sleepy",
             description: "Feeling drowsy.",
-            category: "PHYSICAL",
+            category: EffectCategory.PHYSICAL,
             displayOrder: 8,
         },
         {
             name: "Dry Mouth",
             description: "Cottonmouth.",
-            category: "NEGATIVE",
+            category: EffectCategory.NEGATIVE,
             displayOrder: 9,
         },
         {
             name: "Dry Eyes",
             description: "Dry or irritated eyes.",
-            category: "NEGATIVE",
+            category: EffectCategory.NEGATIVE,
             displayOrder: 10,
         },
     ];

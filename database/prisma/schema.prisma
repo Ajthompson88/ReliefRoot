@@ -36,7 +36,7 @@ enum SessionMethod {
 }
 
 enum MetricCategory {
-  PAIN
+  PHYSICAL
   MENTAL
   SLEEP
   DIGESTIVE
