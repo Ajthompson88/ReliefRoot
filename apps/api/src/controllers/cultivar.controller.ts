@@ -50,6 +50,15 @@ export const patchCultivar: RequestHandler<{ id: string }> = async (req, res) =>
         name: req.body.name,
     });
 
+    if (!cultivar) {
+        res.status(404).json({
+            success: false,
+            message: "Cultivar not found.",
+        });
+
+        return;
+    }
+
     res.status(200).json({
         success: true,
         data: cultivar,
@@ -57,6 +66,15 @@ export const patchCultivar: RequestHandler<{ id: string }> = async (req, res) =>
 };
 export const removeCultivar: RequestHandler<{ id: string }> = async (req, res) => {
     const cultivar = await deleteCultivar(req.params.id);
+
+    if (!cultivar) {
+        res.status(404).json({
+            success: false,
+            message: "Cultivar not found.",
+        });
+
+        return;
+    }
 
     res.status(200).json({
         success: true,
