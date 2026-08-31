@@ -8,7 +8,7 @@
         "packages/*"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "tsc -p apps/api/tsconfig.api.json",
         "lint": "eslint",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
