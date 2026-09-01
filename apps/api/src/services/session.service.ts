@@ -29,6 +29,17 @@ type CreateSessionData = {
     effects?: SessionEffectInput[];
 };
 
+type UpdateSessionData = {
+    productId?: string;
+    organizationId?: string;
+    method?: SessionMethod;
+    startedAt?: Date;
+    doseAmount?: number | null;
+    notes?: string | null;
+    metrics?: SessionMetricInput[];
+    effects?: SessionEffectInput[];
+};
+
 const sessionInclude = {
     product: true,
 
@@ -93,6 +104,76 @@ export async function getSessionById(id: string) {
         },
         include: sessionInclude,
     });
+}
+
+export async function updateSession(id: string, data: UpdateSessionData) {
+    try {
+        return await prisma.$transaction(async (tx) => {
+            await tx.session.update({
+                where: {
+                    id,
+                },
+                data: {
+                    productId: data.productId,
+                    organizationId: data.organizationId,
+                    method: data.method,
+                    startedAt: data.startedAt,
+                    doseAmount: data.doseAmount,
+                    notes: data.notes,
+                },
+            });
+
+            if (data.metrics !== undefined) {
+                await tx.sessionMetric.deleteMany({
+                    where: {
+                        sessionId: id,
+                    },
+                });
+
+                if (data.metrics.length > 0) {
+                    await tx.sessionMetric.createMany({
+                        data: data.metrics.map((metric) => ({
+                            sessionId: id,
+                            metricId: metric.metricId,
+                            beforeValue: metric.beforeValue,
+                            afterValue: metric.afterValue,
+                        })),
+                    });
+                }
+            }
+
+            if (data.effects !== undefined) {
+                await tx.sessionEffect.deleteMany({
+                    where: {
+                        sessionId: id,
+                    },
+                });
+
+                if (data.effects.length > 0) {
+                    await tx.sessionEffect.createMany({
+                        data: data.effects.map((effect) => ({
+                            sessionId: id,
+                            effectId: effect.effectId,
+                            intensity: effect.intensity ?? null,
+                        })),
+                    });
+                }
+            }
+
+            return tx.session.findUnique({
+                where: {
+                    id,
+                },
+                include: sessionInclude,
+            });
+        });
+    } catch (error) {
+        if (isRecordNotFoundError(error)) {
+            return null;
+        }
+
+        throw error;
+    }
 }
 
 export async function deleteSession(id: string) {
