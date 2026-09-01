@@ -1,6 +1,11 @@
+import { Prisma } from "../generated/prisma/client.js";
 import { SessionMethod } from "../generated/prisma/enums.js";
 
 import prisma from "../lib/prisma.js";
+
+function isRecordNotFoundError(error: unknown) {
+    return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025";
+}
 
 type SessionMetricInput = {
     metricId: string;
@@ -23,6 +28,31 @@ type CreateSessionData = {
     metrics?: SessionMetricInput[];
     effects?: SessionEffectInput[];
 };
+
+const sessionInclude = {
+    product: true,
+
+    sessionMetrics: {
+        include: {
+            metric: true,
+        },
+    },
+
+    sessionEffects: {
+        include: {
+            effect: true,
+        },
+    },
+} satisfies Prisma.SessionInclude;
+
+export async function getAllSessions() {
+    return prisma.session.findMany({
+        orderBy: {
+            startedAt: "desc",
+        },
+        include: sessionInclude,
+    });
+}
 
 export async function createSession(data: CreateSessionData) {
     return prisma.session.create({
@@ -52,20 +82,31 @@ export async function createSession(data: CreateSessionData) {
             },
         },
 
-        include: {
-            product: true,
-
-            sessionMetrics: {
-                include: {
-                    metric: true,
-                },
-            },
-
-            sessionEffects: {
-                include: {
-                    effect: true,
-                },
-            },
-        },
+        include: sessionInclude,
     });
+}
+
+export async function getSessionById(id: string) {
+    return prisma.session.findUnique({
+        where: {
+            id,
+        },
+        include: sessionInclude,
+    });
+}
+
+export async function deleteSession(id: string) {
+    try {
+        return await prisma.session.delete({
+            where: {
+                id,
+            },
+        });
+    } catch (error) {
+        if (isRecordNotFoundError(error)) {
+            return null;
+        }
+
+        throw error;
+    }
 }
