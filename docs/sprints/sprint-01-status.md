@@ -6,7 +6,8 @@ In Progress
 
 ## Current Focus
 
-Backend API implementation and complete session workflow integration.
+Backend API hardening, validation, and completion of the Sprint 1 API
+foundation.
 
 ## Completed
 
@@ -24,49 +25,52 @@ Backend API implementation and complete session workflow integration.
 - Made Cultivar a global reference entity.
 - Established the core relationship flow:
     - Session → Product → Cultivar
-- Added product metadata:
-    - Product type
-    - Acquisition type
-    - Brand
-    - Batch number
-    - Package weight
-    - Cannabinoid percentages
-- Added session metadata:
-    - Method
-    - Start time
-    - Dose amount
-    - Notes
+- Added product and session metadata.
 - Created the analytics models:
     - Metric
     - Effect
     - SessionMetric
     - SessionEffect
-- Added metric and effect categories.
-- Added display ordering for metrics and effects.
+- Added metric/effect categories and display ordering.
 - Created and configured the Prisma seed workflow.
 - Added the PostgreSQL Prisma driver adapter.
 - Seeded the default Metric and Effect reference data.
-- Verified all tables, relationships, and seed records through Prisma
+- Verified tables, relationships, and seed records through Prisma
   Studio.
 - Created a reusable Prisma Client instance for the API.
-- Connected the Express API to Prisma and PostgreSQL.
+- Connected Express → Prisma → PostgreSQL.
 - Added API routing, centralized error handling, and 404 route
   handling.
 - Implemented and verified `GET /api/v1/metrics`.
 - Implemented and verified `GET /api/v1/effects`.
-- Implemented and verified Cultivar CRUD, including missing-record 404
-  handling.
-- Implemented and verified Organization CRUD, including missing-record
-  404 handling.
-- Implemented and verified Product CRUD, including missing-record 404
-  handling.
-- Verified Product update persistence against PostgreSQL.
-- Verified Product deletion using a disposable Product record.
-- Retained a Product record for upcoming Session API development.
+- Implemented and verified Cultivar CRUD with 404 handling.
+- Implemented and verified Organization CRUD with 404 handling.
+- Implemented and verified Product CRUD with update persistence,
+  deletion, and 404 handling.
+- Implemented and verified complete Session CRUD:
+    - `POST /api/v1/sessions`
+    - `GET /api/v1/sessions`
+    - `GET /api/v1/sessions/:id`
+    - `PATCH /api/v1/sessions/:id`
+    - `DELETE /api/v1/sessions/:id`
+- Implemented nested Session creation with SessionMetric and
+  SessionEffect records.
+- Verified Session responses include linked Product, Metric, and
+  Effect data.
+- Implemented transactional Session updates.
+- Verified Session PATCH can update Session fields and replace nested
+  Metric and Effect records.
+- Verified Session deletion using a disposable duplicate Session.
+- Verified missing-record 404 handling for Session PATCH and DELETE.
+- Preserved a complete Session record for continued
+  development/testing.
+- Completed the first end-to-end ReliefRoot tracking workflow:
+    - Organization → Product → Session → Metrics/Effects
+- Captured a README milestone screenshot for Session creation with
+  metrics and effects.
 - Updated CI to generate the Prisma Client before linting/building.
-- Added a CI-safe `DATABASE_URL` for Prisma generation and build
-  validation.
-- Verified the GitHub Actions CI pipeline passes.
+- Added a CI-safe `DATABASE_URL`.
+- Verified GitHub Actions CI passes.
 - Tested API behavior through Postman and `curl`.
 
 ## Current Database Flow
@@ -81,6 +85,37 @@ Organization
     │   └── Metric
     └── SessionEffect
         └── Effect
+```
+
+## Current API Surface
+
+```text
+GET    /api/v1/metrics
+GET    /api/v1/effects
+
+GET    /api/v1/cultivars
+GET    /api/v1/cultivars/:id
+POST   /api/v1/cultivars
+PATCH  /api/v1/cultivars/:id
+DELETE /api/v1/cultivars/:id
+
+GET    /api/v1/organizations
+GET    /api/v1/organizations/:id
+POST   /api/v1/organizations
+PATCH  /api/v1/organizations/:id
+DELETE /api/v1/organizations/:id
+
+GET    /api/v1/products
+GET    /api/v1/products/:id
+POST   /api/v1/products
+PATCH  /api/v1/products/:id
+DELETE /api/v1/products/:id
+
+GET    /api/v1/sessions
+GET    /api/v1/sessions/:id
+POST   /api/v1/sessions
+PATCH  /api/v1/sessions/:id
+DELETE /api/v1/sessions/:id
 ```
 
 ## Current Seed Data
@@ -112,78 +147,126 @@ Organization
 - Dry Mouth
 - Dry Eyes
 
+## Verified Session Workflow
+
+The first complete ReliefRoot tracking workflow has been exercised
+successfully through the REST API.
+
+Initial Session test data included:
+
+- Pain: `8 → 4`
+- Anxiety: `6 → 2`
+- Relaxed intensity: `8`
+- Focused intensity: `6`
+
+Session PATCH was then verified with:
+
+- Dose amount: `0.5 → 0.75`
+- Notes updated
+- Pain: `8 → 3`
+- Anxiety replaced with Stress: `7 → 3`
+- Relaxed intensity: `9`
+- Focused replaced with Sleepy intensity: `5`
+
+The nested update is performed transactionally so Session fields and
+replacement SessionMetric/SessionEffect records are handled as one
+database operation.
+
 ## Next Steps
 
-- Implement Session creation with metrics and effects.
-- Test the first complete ReliefRoot workflow through the API and
-  Postman.
-- Add additional Session API operations and validation as needed.
-- Capture and organize README screenshots for completed API
+- Add request validation for Session creation and updates.
+- Validate Session method, timestamps, metric values, effect
+  intensity, and required identifiers.
+- Prevent invalid or duplicate Metric/Effect input before it reaches
+  Prisma.
+- Verify Product and Organization relationships during Session
+  creation/update.
+- Add consistent validation/error responses across existing API
+  resources.
+- Review API behavior for invalid foreign keys and malformed request
+  bodies.
+- Continue capturing README screenshots for meaningful backend
   milestones.
-- Update project documentation as the Session workflow is completed.
-- Commit and push the Session API milestone.
+- Update README/API documentation to reflect the completed Session
+  workflow.
+- Determine the remaining Sprint 1 acceptance criteria before closing
+  the sprint.
 
 ## Sprint Notes
 
-The database and API foundation now support Organizations, Cultivars,
-Products, Metrics, and Effects through tested API endpoints.
+The core backend data path is now operational from Express through
+Prisma to PostgreSQL.
 
-Cultivar, Organization, and Product CRUD operations have been exercised
-against the PostgreSQL database, including update persistence, deletion,
-and missing-record handling.
+Cultivar, Organization, Product, and Session resources have tested CRUD
+implementations. Metric and Effect reference data are available through
+read endpoints.
 
-The next phase is Session integration. Session creation will connect the
-existing Product, Metric, and Effect foundations into the first complete
-ReliefRoot tracking workflow.
+Session integration is complete for the current Sprint 1 CRUD scope. The
+API can create a Session with nested metrics and effects, retrieve the
+complete tracking record, transactionally update Session metadata and
+nested analytics records, and delete Sessions while respecting cascade
+relationships.
+
+This completes the first meaningful end-to-end ReliefRoot data workflow
+and demonstrates that the existing schema supports the central product
+goal: connecting a consumed Product to before/after measurements and
+experienced Effects.
 
 During API testing, Postman intermittently displayed stale response
-bodies even when the HTTP status and backend behavior were correct.
-Equivalent requests through `curl` were used to verify the actual API
-responses and database persistence.
+bodies. Equivalent `curl` requests were used to verify actual API
+responses and persisted database state.
 
-The current schema does not need expansion before Session API
-development. The focus should remain on exercising the existing data
-model through the API.
+The next phase should focus on validation and API hardening rather than
+expanding the schema prematurely.
 
 ## Development Log Entry
 
-# Development Log --- August 31, 2026
+# Development Log --- September 1, 2026
 
 ## Summary
 
-Advanced Sprint 1 from an analytics-ready database foundation to a
-working Prisma-backed REST API.
+Advanced Sprint 1 from individual CRUD resources to a complete
+end-to-end ReliefRoot Session workflow.
 
-The Express API is now connected to PostgreSQL through Prisma. Metric
-and Effect reference data can be retrieved through API endpoints, and
-Cultivar, Organization, and Product resources have tested CRUD
-implementations.
+Session creation now connects an Organization and Product to
+before/after Metric measurements and experienced Effects in a single API
+request. Session retrieval returns the linked Product and nested
+Metric/Effect reference data.
 
-Product CRUD was verified through its complete lifecycle, including
-creation, retrieval, update persistence, deletion, and missing-record
-handling. A Product record remains available for the upcoming Session
-workflow.
+Session CRUD was completed with list, single-record retrieval,
+transactional update, deletion, and missing-record handling. PATCH
+testing confirmed that Session metadata can be changed while nested
+SessionMetric and SessionEffect records are replaced atomically.
 
-The GitHub Actions CI pipeline was also updated to generate the Prisma
-Client before linting and building, allowing the current backend to pass
-CI successfully.
+A duplicate Session created during testing was safely deleted, leaving
+the primary milestone Session in the database for continued development.
+
+All current TypeScript changes pass formatting, linting, and build
+validation.
 
 ## Key Decisions
 
 - Cultivars remain global reference records.
-- Products belong to organizations and may reference cultivars.
-- Sessions reference products rather than cultivars directly.
-- Metrics use before-and-after values.
+- Products belong to Organizations and may reference Cultivars.
+- Sessions reference Products rather than Cultivars directly.
+- Sessions also belong to Organizations.
+- Metrics use before-and-after integer values.
 - Effects are recorded separately with optional intensity.
-- Metrics and effects use global reference tables.
-- Categories support filtering, organization, and grouped analytics.
+- Metrics and Effects use global reference tables.
+- Categories support filtering, organization, and future grouped
+  analytics.
 - Default reference data is inserted through an idempotent Prisma seed
   script.
-- API resources follow a controller/service/router separation.
+- API resources follow controller/service/router separation.
 - Prisma record-not-found errors are translated into API-level `404`
   responses.
-- The existing Product record will be retained to support Session API
-  testing.
+- Session creation uses nested Prisma writes for SessionMetric and
+  SessionEffect records.
+- Session PATCH uses a Prisma transaction when replacing nested Metric
+  and Effect records.
+- Nested metrics/effects are replaced only when their respective
+  arrays are supplied in a PATCH request.
+- The milestone Session remains available for further API testing.
 
 ## Technical Issues Resolved
 
@@ -197,15 +280,20 @@ CI successfully.
 - Prisma Client generation in GitHub Actions.
 - CI environment configuration for Prisma generation and TypeScript
   builds.
-- Verification of misleading/stale Postman response bodies using
-  direct `curl` requests.
+- Verification of stale Postman response bodies using `curl`.
+- Session route/controller/service integration.
+- Nested SessionMetric and SessionEffect creation.
+- Transactional replacement of nested Session analytics data during
+  PATCH.
+- Session deletion and missing-record handling.
 
 ## Stopping Point
 
-Cultivar, Organization, and Product CRUD are complete and tested. Metric
-and Effect read endpoints are working, the
-Express-to-Prisma-to-PostgreSQL path is verified, and CI is passing.
+Cultivar, Organization, Product, and Session CRUD are complete and
+tested. Metric and Effect read endpoints are working. The Express →
+Prisma → PostgreSQL path is verified, CI is passing, and the first
+complete ReliefRoot tracking workflow has been exercised successfully
+through the API.
 
-The next development session should begin with Session creation and the
-integration of SessionMetric and SessionEffect records into the first
-complete ReliefRoot API workflow.
+The next development session should begin with request validation and
+API hardening, starting with Session creation and update payloads.
