@@ -128,6 +128,98 @@ async function validateCreateSessionReferences(data: CreateSessionData) {
     }
 }
 
+async function validateUpdateSessionReferences(id: string, data: UpdateSessionData) {
+    const existingSession = await prisma.session.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            id: true,
+            productId: true,
+            organizationId: true,
+        },
+    });
+
+    if (!existingSession) {
+        return false;
+    }
+
+    const productId = data.productId ?? existingSession.productId;
+
+    const organizationId = data.organizationId ?? existingSession.organizationId;
+
+    const organization = await prisma.organization.findUnique({
+        where: {
+            id: organizationId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!organization) {
+        throw new ApiError(404, "Organization not found.");
+    }
+
+    const product = await prisma.product.findUnique({
+        where: {
+            id: productId,
+        },
+        select: {
+            id: true,
+            organizationId: true,
+        },
+    });
+
+    if (!product) {
+        throw new ApiError(404, "Product not found.");
+    }
+
+    if (product.organizationId !== organizationId) {
+        throw new ApiError(400, "Product does not belong to the supplied organization.");
+    }
+
+    if (data.metrics && data.metrics.length > 0) {
+        const metricIds = data.metrics.map((metric) => metric.metricId);
+
+        const metrics = await prisma.metric.findMany({
+            where: {
+                id: {
+                    in: metricIds,
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (metrics.length !== metricIds.length) {
+            throw new ApiError(400, "One or more metricId values are invalid.");
+        }
+    }
+
+    if (data.effects && data.effects.length > 0) {
+        const effectIds = data.effects.map((effect) => effect.effectId);
+
+        const effects = await prisma.effect.findMany({
+            where: {
+                id: {
+                    in: effectIds,
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (effects.length !== effectIds.length) {
+            throw new ApiError(400, "One or more effectId values are invalid.");
+        }
+    }
+
+    return true;
+}
+
 export async function getAllSessions() {
     return prisma.session.findMany({
         orderBy: {
@@ -181,6 +273,12 @@ export async function getSessionById(id: string) {
 }
 
 export async function updateSession(id: string, data: UpdateSessionData) {
+    const referencesAreValid = await validateUpdateSessionReferences(id, data);
+
+    if (!referencesAreValid) {
+        return null;
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             await tx.session.update({
