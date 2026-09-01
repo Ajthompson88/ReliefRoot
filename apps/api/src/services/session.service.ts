@@ -2,6 +2,7 @@ import { Prisma } from "../generated/prisma/client.js";
 import { SessionMethod } from "../generated/prisma/enums.js";
 
 import prisma from "../lib/prisma.js";
+import { ApiError } from "../utils/apiError.js";
 
 function isRecordNotFoundError(error: unknown) {
     return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025";
@@ -56,6 +57,77 @@ const sessionInclude = {
     },
 } satisfies Prisma.SessionInclude;
 
+async function validateCreateSessionReferences(data: CreateSessionData) {
+    const organization = await prisma.organization.findUnique({
+        where: {
+            id: data.organizationId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!organization) {
+        throw new ApiError(404, "Organization not found.");
+    }
+
+    const product = await prisma.product.findUnique({
+        where: {
+            id: data.productId,
+        },
+        select: {
+            id: true,
+            organizationId: true,
+        },
+    });
+
+    if (!product) {
+        throw new ApiError(404, "Product not found.");
+    }
+
+    if (product.organizationId !== data.organizationId) {
+        throw new ApiError(400, "Product does not belong to the supplied organization.");
+    }
+
+    if (data.metrics && data.metrics.length > 0) {
+        const metricIds = data.metrics.map((metric) => metric.metricId);
+
+        const metrics = await prisma.metric.findMany({
+            where: {
+                id: {
+                    in: metricIds,
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (metrics.length !== metricIds.length) {
+            throw new ApiError(400, "One or more metricId values are invalid.");
+        }
+    }
+
+    if (data.effects && data.effects.length > 0) {
+        const effectIds = data.effects.map((effect) => effect.effectId);
+
+        const effects = await prisma.effect.findMany({
+            where: {
+                id: {
+                    in: effectIds,
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (effects.length !== effectIds.length) {
+            throw new ApiError(400, "One or more effectId values are invalid.");
+        }
+    }
+}
+
 export async function getAllSessions() {
     return prisma.session.findMany({
         orderBy: {
@@ -66,6 +138,8 @@ export async function getAllSessions() {
 }
 
 export async function createSession(data: CreateSessionData) {
+    await validateCreateSessionReferences(data);
+
     return prisma.session.create({
         data: {
             productId: data.productId,
