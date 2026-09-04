@@ -7,6 +7,7 @@ import metricRouter from "./metric.routes.js";
 import organizationRouter from "./organization.routes.js";
 import productRouter from "./product.routes.js";
 import sessionRouter from "./session.routes.js";
+import authRoutes from "./auth.routes.js";
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use("/cultivars", cultivarRouter);
 router.use("/organizations", organizationRouter);
 router.use("/products", productRouter);
 router.use("/sessions", sessionRouter);
+router.use("/auth", authRoutes);
 
 export default router;
