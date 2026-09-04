@@ -73,3 +73,25 @@ export const validateRegister: RequestHandler = (req, res, next) => {
 
     next();
 };
+
+export const validateLogin: RequestHandler = (req, res, next) => {
+    const { email, password } = req.body ?? {};
+
+    if (typeof email !== "string" || !email.trim()) {
+        res.status(400).json({
+            success: false,
+            message: "email is required.",
+        });
+        return;
+    }
+
+    if (typeof password !== "string" || !password) {
+        res.status(400).json({
+            success: false,
+            message: "password is required.",
+        });
+        return;
+    }
+
+    next();
+};

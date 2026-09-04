@@ -13,6 +13,11 @@ type RegisterData = {
     organizationName: string;
 };
 
+type LoginData = {
+    email: string;
+    password: string;
+};
+
 export async function registerUser(data: RegisterData) {
     const normalizedEmail = data.email.trim().toLowerCase();
 
@@ -83,4 +88,73 @@ export async function registerUser(data: RegisterData) {
             organization,
         };
     });
+}
+
+export async function loginUser(data: LoginData) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: normalizedEmail,
+        },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            organizationId: true,
+            createdAt: true,
+            updatedAt: true,
+            passwordHash: true,
+        },
+    });
+
+    if (!user) {
+        throw new ApiError(401, "Invalid email or password.");
+    }
+
+    const passwordMatches = await argon2.verify(user.passwordHash, data.password);
+
+    if (!passwordMatches) {
+        throw new ApiError(401, "Invalid email or password.");
+    }
+
+    return {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        organizationId: user.organizationId,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    };
+}
+
+export async function getAuthenticatedUser(userId: string) {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            organizationId: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+
+    if (!user) {
+        throw new ApiError(401, "Authentication required.");
+    }
+
+    return user;
 }
