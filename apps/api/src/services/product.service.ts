@@ -1,11 +1,6 @@
-import { Prisma } from "../generated/prisma/client.js";
 import { AcquisitionType, ProductType } from "../generated/prisma/enums.js";
 
 import prisma from "../lib/prisma.js";
-
-function isRecordNotFoundError(error: unknown) {
-    return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025";
-}
 
 type ProductData = {
     name: string;
@@ -19,60 +14,116 @@ type ProductData = {
     cbgPercent?: number | null;
     cbnPercent?: number | null;
     cultivarId?: string | null;
-    organizationId: string;
 };
 
-export async function getAllProducts() {
+function sanitizeProductUpdate(data: Partial<ProductData>): Partial<ProductData> {
+    return {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.productType !== undefined && {
+            productType: data.productType,
+        }),
+        ...(data.acquisitionType !== undefined && {
+            acquisitionType: data.acquisitionType,
+        }),
+        ...(data.brand !== undefined && { brand: data.brand }),
+        ...(data.batchNumber !== undefined && {
+            batchNumber: data.batchNumber,
+        }),
+        ...(data.packageWeight !== undefined && {
+            packageWeight: data.packageWeight,
+        }),
+        ...(data.thcPercent !== undefined && {
+            thcPercent: data.thcPercent,
+        }),
+        ...(data.cbdPercent !== undefined && {
+            cbdPercent: data.cbdPercent,
+        }),
+        ...(data.cbgPercent !== undefined && {
+            cbgPercent: data.cbgPercent,
+        }),
+        ...(data.cbnPercent !== undefined && {
+            cbnPercent: data.cbnPercent,
+        }),
+        ...(data.cultivarId !== undefined && {
+            cultivarId: data.cultivarId,
+        }),
+    };
+}
+
+export async function getAllProducts(organizationId: string) {
     return prisma.product.findMany({
+        where: {
+            organizationId,
+        },
         orderBy: {
             name: "asc",
         },
     });
 }
 
-export async function createProduct(data: ProductData) {
+export async function createProduct(data: ProductData, organizationId: string) {
     return prisma.product.create({
-        data,
-    });
-}
-
-export async function getProductById(id: string) {
-    return prisma.product.findUnique({
-        where: {
-            id,
+        data: {
+            ...data,
+            organizationId,
         },
     });
 }
 
-export async function updateProduct(id: string, data: Partial<ProductData>) {
-    try {
-        return await prisma.product.update({
-            where: {
-                id,
-            },
-            data,
-        });
-    } catch (error) {
-        if (isRecordNotFoundError(error)) {
-            return null;
-        }
-
-        throw error;
-    }
+export async function getProductById(id: string, organizationId: string) {
+    return prisma.product.findFirst({
+        where: {
+            id,
+            organizationId,
+        },
+    });
 }
 
-export async function deleteProduct(id: string) {
-    try {
-        return await prisma.product.delete({
-            where: {
-                id,
-            },
-        });
-    } catch (error) {
-        if (isRecordNotFoundError(error)) {
-            return null;
-        }
+export async function updateProduct(
+    id: string,
+    organizationId: string,
+    data: Partial<ProductData>
+) {
+    const existingProduct = await prisma.product.findFirst({
+        where: {
+            id,
+            organizationId,
+        },
+        select: {
+            id: true,
+        },
+    });
 
-        throw error;
+    if (!existingProduct) {
+        return null;
     }
+
+    return prisma.product.update({
+        where: {
+            id: existingProduct.id,
+        },
+        data: sanitizeProductUpdate(data),
+    });
+}
+
+export async function deleteProduct(id: string, organizationId: string) {
+    const existingProduct = await prisma.product.findFirst({
+        where: {
+            id,
+            organizationId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!existingProduct) {
+        return null;
+    }
+
+    return prisma.product.delete({
+        where: {
+            id: existingProduct.id,
+        },
+    });
 }

@@ -4,16 +4,15 @@ import {
     getOrganization,
     getOrganizations,
     patchOrganization,
-    postOrganization,
-    removeOrganization,
 } from "../controllers/organization.controller.js";
+import { loadAuthenticatedUser, requireAuth } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
+router.use(requireAuth, loadAuthenticatedUser);
+
 router.get("/", getOrganizations);
 router.get("/:id", getOrganization);
-router.post("/", postOrganization);
 router.patch("/:id", patchOrganization);
-router.delete("/:id", removeOrganization);
 
 export default router;

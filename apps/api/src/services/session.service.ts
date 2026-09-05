@@ -21,7 +21,6 @@ type SessionEffectInput = {
 
 type CreateSessionData = {
     productId: string;
-    organizationId: string;
     method: SessionMethod;
     startedAt: Date;
     doseAmount?: number | null;
@@ -32,7 +31,6 @@ type CreateSessionData = {
 
 type UpdateSessionData = {
     productId?: string;
-    organizationId?: string;
     method?: SessionMethod;
     startedAt?: Date;
     doseAmount?: number | null;
@@ -43,13 +41,11 @@ type UpdateSessionData = {
 
 const sessionInclude = {
     product: true,
-
     sessionMetrics: {
         include: {
             metric: true,
         },
     },
-
     sessionEffects: {
         include: {
             effect: true,
@@ -57,86 +53,88 @@ const sessionInclude = {
     },
 } satisfies Prisma.SessionInclude;
 
-async function validateCreateSessionReferences(data: CreateSessionData) {
-    const organization = await prisma.organization.findUnique({
+async function validateMetricReferences(metrics?: SessionMetricInput[]) {
+    if (!metrics || metrics.length === 0) {
+        return;
+    }
+
+    const metricIds = metrics.map((metric) => metric.metricId);
+
+    const existingMetrics = await prisma.metric.findMany({
         where: {
-            id: data.organizationId,
+            id: {
+                in: metricIds,
+            },
         },
         select: {
             id: true,
         },
     });
 
-    if (!organization) {
-        throw new ApiError(404, "Organization not found.");
+    if (existingMetrics.length !== metricIds.length) {
+        throw new ApiError(400, "One or more metricId values are invalid.");
+    }
+}
+
+async function validateEffectReferences(effects?: SessionEffectInput[]) {
+    if (!effects || effects.length === 0) {
+        return;
     }
 
-    const product = await prisma.product.findUnique({
+    const effectIds = effects.map((effect) => effect.effectId);
+
+    const existingEffects = await prisma.effect.findMany({
         where: {
-            id: data.productId,
+            id: {
+                in: effectIds,
+            },
         },
         select: {
             id: true,
-            organizationId: true,
+        },
+    });
+
+    if (existingEffects.length !== effectIds.length) {
+        throw new ApiError(400, "One or more effectId values are invalid.");
+    }
+}
+
+async function validateProductReference(productId: string, organizationId: string) {
+    const product = await prisma.product.findFirst({
+        where: {
+            id: productId,
+            organizationId,
+        },
+        select: {
+            id: true,
         },
     });
 
     if (!product) {
         throw new ApiError(404, "Product not found.");
     }
-
-    if (product.organizationId !== data.organizationId) {
-        throw new ApiError(400, "Product does not belong to the supplied organization.");
-    }
-
-    if (data.metrics && data.metrics.length > 0) {
-        const metricIds = data.metrics.map((metric) => metric.metricId);
-
-        const metrics = await prisma.metric.findMany({
-            where: {
-                id: {
-                    in: metricIds,
-                },
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (metrics.length !== metricIds.length) {
-            throw new ApiError(400, "One or more metricId values are invalid.");
-        }
-    }
-
-    if (data.effects && data.effects.length > 0) {
-        const effectIds = data.effects.map((effect) => effect.effectId);
-
-        const effects = await prisma.effect.findMany({
-            where: {
-                id: {
-                    in: effectIds,
-                },
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (effects.length !== effectIds.length) {
-            throw new ApiError(400, "One or more effectId values are invalid.");
-        }
-    }
 }
 
-async function validateUpdateSessionReferences(id: string, data: UpdateSessionData) {
-    const existingSession = await prisma.session.findUnique({
+async function validateCreateSessionReferences(data: CreateSessionData, organizationId: string) {
+    await validateProductReference(data.productId, organizationId);
+
+    await validateMetricReferences(data.metrics);
+    await validateEffectReferences(data.effects);
+}
+
+async function validateUpdateSessionReferences(
+    id: string,
+    organizationId: string,
+    data: UpdateSessionData
+) {
+    const existingSession = await prisma.session.findFirst({
         where: {
             id,
+            organizationId,
         },
         select: {
             id: true,
             productId: true,
-            organizationId: true,
         },
     });
 
@@ -146,82 +144,19 @@ async function validateUpdateSessionReferences(id: string, data: UpdateSessionDa
 
     const productId = data.productId ?? existingSession.productId;
 
-    const organizationId = data.organizationId ?? existingSession.organizationId;
+    await validateProductReference(productId, organizationId);
 
-    const organization = await prisma.organization.findUnique({
-        where: {
-            id: organizationId,
-        },
-        select: {
-            id: true,
-        },
-    });
-
-    if (!organization) {
-        throw new ApiError(404, "Organization not found.");
-    }
-
-    const product = await prisma.product.findUnique({
-        where: {
-            id: productId,
-        },
-        select: {
-            id: true,
-            organizationId: true,
-        },
-    });
-
-    if (!product) {
-        throw new ApiError(404, "Product not found.");
-    }
-
-    if (product.organizationId !== organizationId) {
-        throw new ApiError(400, "Product does not belong to the supplied organization.");
-    }
-
-    if (data.metrics && data.metrics.length > 0) {
-        const metricIds = data.metrics.map((metric) => metric.metricId);
-
-        const metrics = await prisma.metric.findMany({
-            where: {
-                id: {
-                    in: metricIds,
-                },
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (metrics.length !== metricIds.length) {
-            throw new ApiError(400, "One or more metricId values are invalid.");
-        }
-    }
-
-    if (data.effects && data.effects.length > 0) {
-        const effectIds = data.effects.map((effect) => effect.effectId);
-
-        const effects = await prisma.effect.findMany({
-            where: {
-                id: {
-                    in: effectIds,
-                },
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (effects.length !== effectIds.length) {
-            throw new ApiError(400, "One or more effectId values are invalid.");
-        }
-    }
+    await validateMetricReferences(data.metrics);
+    await validateEffectReferences(data.effects);
 
     return true;
 }
 
-export async function getAllSessions() {
+export async function getAllSessions(organizationId: string) {
     return prisma.session.findMany({
+        where: {
+            organizationId,
+        },
         orderBy: {
             startedAt: "desc",
         },
@@ -229,18 +164,17 @@ export async function getAllSessions() {
     });
 }
 
-export async function createSession(data: CreateSessionData) {
-    await validateCreateSessionReferences(data);
+export async function createSession(data: CreateSessionData, organizationId: string) {
+    await validateCreateSessionReferences(data, organizationId);
 
     return prisma.session.create({
         data: {
             productId: data.productId,
-            organizationId: data.organizationId,
+            organizationId,
             method: data.method,
             startedAt: data.startedAt,
             doseAmount: data.doseAmount ?? null,
             notes: data.notes ?? null,
-
             sessionMetrics: {
                 create:
                     data.metrics?.map((metric) => ({
@@ -249,7 +183,6 @@ export async function createSession(data: CreateSessionData) {
                         afterValue: metric.afterValue,
                     })) ?? [],
             },
-
             sessionEffects: {
                 create:
                     data.effects?.map((effect) => ({
@@ -258,22 +191,22 @@ export async function createSession(data: CreateSessionData) {
                     })) ?? [],
             },
         },
-
         include: sessionInclude,
     });
 }
 
-export async function getSessionById(id: string) {
-    return prisma.session.findUnique({
+export async function getSessionById(id: string, organizationId: string) {
+    return prisma.session.findFirst({
         where: {
             id,
+            organizationId,
         },
         include: sessionInclude,
     });
 }
 
-export async function updateSession(id: string, data: UpdateSessionData) {
-    const referencesAreValid = await validateUpdateSessionReferences(id, data);
+export async function updateSession(id: string, organizationId: string, data: UpdateSessionData) {
+    const referencesAreValid = await validateUpdateSessionReferences(id, organizationId, data);
 
     if (!referencesAreValid) {
         return null;
@@ -287,7 +220,6 @@ export async function updateSession(id: string, data: UpdateSessionData) {
                 },
                 data: {
                     productId: data.productId,
-                    organizationId: data.organizationId,
                     method: data.method,
                     startedAt: data.startedAt,
                     doseAmount: data.doseAmount,
@@ -332,9 +264,10 @@ export async function updateSession(id: string, data: UpdateSessionData) {
                 }
             }
 
-            return tx.session.findUnique({
+            return tx.session.findFirst({
                 where: {
                     id,
+                    organizationId,
                 },
                 include: sessionInclude,
             });
@@ -348,11 +281,25 @@ export async function updateSession(id: string, data: UpdateSessionData) {
     }
 }
 
-export async function deleteSession(id: string) {
+export async function deleteSession(id: string, organizationId: string) {
+    const existingSession = await prisma.session.findFirst({
+        where: {
+            id,
+            organizationId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!existingSession) {
+        return null;
+    }
+
     try {
         return await prisma.session.delete({
             where: {
-                id,
+                id: existingSession.id,
             },
         });
     } catch (error) {

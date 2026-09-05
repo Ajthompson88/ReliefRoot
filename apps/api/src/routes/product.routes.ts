@@ -7,8 +7,11 @@ import {
     postProduct,
     removeProduct,
 } from "../controllers/product.controller.js";
+import { requireAuth, loadAuthenticatedUser } from "../middleware/auth.middleware.js";
 
 const router = Router();
+
+router.use(requireAuth, loadAuthenticatedUser);
 
 router.get("/", getProducts);
 router.get("/:id", getProduct);

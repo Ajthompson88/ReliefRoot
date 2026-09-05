@@ -9,7 +9,9 @@ import {
 } from "../services/product.service.js";
 
 export const getProducts: RequestHandler = async (_req, res) => {
-    const products = await getAllProducts();
+    const organizationId = res.locals.user.organizationId;
+
+    const products = await getAllProducts(organizationId);
 
     res.status(200).json({
         success: true,
@@ -19,20 +21,24 @@ export const getProducts: RequestHandler = async (_req, res) => {
 };
 
 export const postProduct: RequestHandler = async (req, res) => {
-    const product = await createProduct({
-        name: req.body.name,
-        productType: req.body.productType,
-        acquisitionType: req.body.acquisitionType,
-        brand: req.body.brand ?? null,
-        batchNumber: req.body.batchNumber ?? null,
-        packageWeight: req.body.packageWeight ?? null,
-        thcPercent: req.body.thcPercent ?? null,
-        cbdPercent: req.body.cbdPercent ?? null,
-        cbgPercent: req.body.cbgPercent ?? null,
-        cbnPercent: req.body.cbnPercent ?? null,
-        cultivarId: req.body.cultivarId ?? null,
-        organizationId: req.body.organizationId,
-    });
+    const organizationId = res.locals.user.organizationId;
+
+    const product = await createProduct(
+        {
+            name: req.body.name,
+            productType: req.body.productType,
+            acquisitionType: req.body.acquisitionType,
+            brand: req.body.brand ?? null,
+            batchNumber: req.body.batchNumber ?? null,
+            packageWeight: req.body.packageWeight ?? null,
+            thcPercent: req.body.thcPercent ?? null,
+            cbdPercent: req.body.cbdPercent ?? null,
+            cbgPercent: req.body.cbgPercent ?? null,
+            cbnPercent: req.body.cbnPercent ?? null,
+            cultivarId: req.body.cultivarId ?? null,
+        },
+        organizationId
+    );
 
     res.status(201).json({
         success: true,
@@ -41,7 +47,9 @@ export const postProduct: RequestHandler = async (req, res) => {
 };
 
 export const getProduct: RequestHandler<{ id: string }> = async (req, res) => {
-    const product = await getProductById(req.params.id);
+    const organizationId = res.locals.user.organizationId;
+
+    const product = await getProductById(req.params.id, organizationId);
 
     if (!product) {
         res.status(404).json({
@@ -59,7 +67,9 @@ export const getProduct: RequestHandler<{ id: string }> = async (req, res) => {
 };
 
 export const patchProduct: RequestHandler<{ id: string }> = async (req, res) => {
-    const product = await updateProduct(req.params.id, req.body);
+    const organizationId = res.locals.user.organizationId;
+
+    const product = await updateProduct(req.params.id, organizationId, req.body);
 
     if (!product) {
         res.status(404).json({
@@ -77,7 +87,9 @@ export const patchProduct: RequestHandler<{ id: string }> = async (req, res) => 
 };
 
 export const removeProduct: RequestHandler<{ id: string }> = async (req, res) => {
-    const product = await deleteProduct(req.params.id);
+    const organizationId = res.locals.user.organizationId;
+
+    const product = await deleteProduct(req.params.id, organizationId);
 
     if (!product) {
         res.status(404).json({
