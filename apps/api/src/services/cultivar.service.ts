@@ -1,6 +1,15 @@
 import { Prisma } from "../generated/prisma/client.js";
+import { UserRole } from "../generated/prisma/enums.js";
 
 import prisma from "../lib/prisma.js";
+import { ApiError } from "../utils/apiError.js";
+
+export function assertCultivarWriteAccess(role: UserRole) {
+    // Cultivars are shared globally. Self-registered organization owners are not catalog admins.
+    if (role !== UserRole.ADMIN) {
+        throw new ApiError(403, "Only administrators may modify global cultivars.");
+    }
+}
 
 function isRecordNotFoundError(error: unknown) {
     return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025";

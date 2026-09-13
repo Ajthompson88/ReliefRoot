@@ -1,8 +1,16 @@
 # ReliefRoot Agent Instructions
 
+## Core Operating Rules
+
+- Work only within the scope of the requested task.
+- Inspect existing implementation and conventions before changing code.
+- Prefer existing architecture, patterns, and dependencies.
+- Do not make unrelated cleanup changes.
+- Report pre-existing problems rather than silently fixing unrelated code.
+
 ## Validation
 
-After modifying application code, run the project's standard validation sequence:
+Run the standard validation sequence after modifying application code:
 
 1. `npm run prisma:validate`
 2. `npm run lint`
@@ -11,45 +19,53 @@ After modifying application code, run the project's standard validation sequence
 
 These commands correspond to the VS Code `ReliefRoot: Full Validation` task.
 
-- Do not consider work complete if a validation failure caused by your changes remains unresolved.
-- Report validation failures that existed before your changes rather than modifying unrelated code to fix them.
-- Run additional targeted tests when tests relevant to the changed code exist.
+- Work is not complete if validation failures caused by the agent remain unresolved.
+- Report pre-existing failures rather than fixing them outside the requested scope.
+- Run relevant targeted tests when they exist.
 
-## Agent Autonomy
+## Execution Autonomy
 
-Codex may without prior approval:
+The agent may perform the following without repository-level approval:
 
-- Inspect and search the repository.
-- Run read-only Git commands.
-- Run validation, linting, formatting checks, builds, and tests.
-- Run Prisma validation and migration status commands.
-- Inspect Docker container status and logs.
-- Fix linting, formatting, and type errors caused by its own changes.
-- Update documentation related to its changes.
+- Repository searches and file inspection.
+- Read-only Git commands, including status, diff, and log.
+- Validation, linting, formatting checks, builds, and tests.
+- Prisma validation and migration-status inspection.
+- Docker container/service status and log inspection.
+- Other operations that inspect state without intentionally changing repository, database, dependency, infrastructure, environment, or Git state.
+- Fixes for linting, formatting, or type errors caused by the agent's own authorized changes.
+- Documentation updates directly related to authorized changes.
 
-Codex must request approval before:
+The agent must obtain explicit authorization before intentionally changing:
 
-- Adding, removing, or upgrading dependencies.
-- Creating or applying database migrations.
-- Seeding, resetting, or deleting database data.
-- Changing environment variables or secrets.
-- Modifying Docker infrastructure.
-- Creating, deleting, or renaming branches.
-- Committing or pushing changes.
-- Making architectural changes outside the scope of the requested task.
+- Dependencies, including additions, removals, or upgrades.
+- Database schema or migration state, including creating or applying migrations.
+- Seed or persistent database data, including seeding, resetting, or deleting data.
+- Environment variables or secrets.
+- Docker infrastructure or container lifecycle, including starting, stopping, or recreating containers.
+- Git branches, including creating, deleting, or renaming them.
+- Commits, pushes, or remote Git state.
+- Architecture outside the explicitly requested task.
+
+Request approval when that authorization has not already been provided. Authorization does not
+permit actions explicitly prohibited elsewhere in this policy.
+
+Runtime or sandbox permissions are separate from repository authorization. A command permitted by
+AGENTS.md may still require approval to access resources outside the execution environment's sandbox.
+Do not interpret a runtime or sandbox permission request as an AGENTS.md policy violation.
 
 ## Git
 
-- Do not modify existing commits.
-- Do not force push.
-- Show a concise git diff summary after changes.
-- Do not create branches unless explicitly requested.
+- Never modify existing commits.
+- Never force push.
+- Follow Execution Autonomy authorization requirements for branches, commits, pushes, and remotes.
+- Show a concise Git diff summary after changes.
 
 ## Database
 
 - Never edit an already-applied Prisma migration.
-- Generate a new migration for schema changes.
-- Do not reset or delete development data unless explicitly requested.
+- Generate a new migration for schema changes, subject to the Execution Autonomy approval requirements.
+- Never reset or delete development data without explicit authorization.
 
 ## Architecture
 
@@ -61,119 +77,84 @@ Codex must request approval before:
 ## Dependencies
 
 - Prefer existing dependencies.
-- Before adding a dependency, explain why it is necessary.
+- Before adding a dependency, explain why it is necessary and obtain approval.
+
+## TODO Management
+
+`TODO.md` is the repository's living development work tracker. Each work-item heading is the canonical
+machine-readable representation of its identity and state. Use these exact formats:
+
+```markdown
+### TODO RR-### [PLANNED]: Description
+
+### TODO RR-### [IN_PROGRESS]: Description
+
+### TODO RR-### [BLOCKED]: Description
+
+### RR-### [COMPLETED]: Description
+```
+
+- Valid states are exactly `PLANNED`, `IN_PROGRESS`, `BLOCKED`, and `COMPLETED`.
+- Heading state is canonical; do not infer state from prose or maintain a separate Status field.
+- Each RR identifier is permanent and unique. Never reuse or renumber identifiers.
+- Assign new identifiers sequentially after inspecting existing IDs.
+- Unfinished headings retain `TODO`; completed headings must not contain `TODO`.
+- Heading state and section must agree: `PLANNED` in `Planned`, `IN_PROGRESS` in `In Progress`, `BLOCKED` in `Blocked`, and `COMPLETED` in `Completed`.
+- Preserve priorities, descriptions, acceptance criteria, notes, and other useful work-item information.
+- Add actionable work only when directly supported by repository evidence. Do not add speculative improvements, stylistic preferences, or unrelated ideas.
+- Retain completed items in `Completed`; do not delete them.
+- If `TODO.md` does not exist, create it before recording actionable work, with `In Progress`, `Planned`, `Blocked`, and `Completed` sections.
+- Do not create `TODO.md` solely because the repository has no outstanding actionable work.
+- If `TODO.md` is unexpectedly missing but Git history shows it previously existed, report the discrepancy rather than recreating it automatically.
+
+## Work Item Lifecycle
+
+When implementing an existing RR item:
+
+1. Review its scope, acceptance criteria, and related TODO items.
+2. Change `PLANNED` to `IN_PROGRESS` before implementation begins.
+3. Preserve its RR identifier throughout all state changes.
+4. Change `IN_PROGRESS` to `BLOCKED` if an unresolved dependency or required decision prevents continuation.
+5. Update checklists and concise implementation notes as work progresses.
+6. Change to `COMPLETED` only after acceptance criteria are satisfied and relevant validation passes.
+7. For every state change, update the canonical heading, retain `TODO` only for unfinished work, and move the item to the matching section.
+8. If implementation materially changes another existing RR item's scope or acceptance criteria, update that item without incorrectly changing its state.
+9. Mention TODO changes in the final implementation summary.
 
 ## Pre-Commit Review
 
-When asked to perform a pre-commit review:
+A pre-commit review is read-only by default. Do not modify files unless explicitly requested, and do
+not stage, commit, push, or create branches during the review.
 
-1. Inspect `git status`.
-2. Inspect the complete working-tree diff, including staged and unstaged changes.
-3. Identify:
-
-- Likely bugs or regressions.
-- Type-safety problems.
-- Database or Prisma concerns.
-- Debugging code or accidental changes.
-- Secrets, credentials, or sensitive data that should not be committed.
-- Unnecessary or unrelated changes.
-- Missing documentation when the change requires it.
-
-4. Run the standard validation sequence:
-
-- `npm run prisma:validate`
-- `npm run lint`
-- `npm run format:check`
-- `npm run build`
-
-5. Run relevant targeted tests when they exist.
-6. Do not modify files during the review unless explicitly requested.
-7. Do not stage, commit, push, or create branches.
-8. Finish with a concise report containing:
-
-- Files changed.
-- Validation results.
-- Findings grouped by severity.
-- Any recommended fixes.
-- Final status: `READY TO COMMIT` or `NOT READY TO COMMIT`.
-
-A pre-commit review is read-only by default. If an issue is found, report it and wait for approval before making changes.
+1. Inspect Git status and the complete staged and unstaged diff, including untracked files.
+2. Check for bugs or regressions, type-safety problems, Prisma/database issues, debugging artifacts, secrets or sensitive data, unrelated changes, and missing required documentation.
+3. Run the standard validation sequence and relevant targeted tests.
+4. Report problems and recommended fixes without applying them unless explicitly authorized.
+5. Finish with files changed, validation results, findings grouped by severity, recommended fixes, and `READY TO COMMIT` or `NOT READY TO COMMIT`.
 
 ## End-of-Session Review
 
-When asked to perform an end-of-session review:
+An end-of-session review is read-only. Do not modify, stage, commit, push, or delete files.
 
-1. Inspect `git status`.
-2. Inspect staged and unstaged changes.
-3. Review commits made during the current development session when they can be identified reliably.
-4. Do not modify, stage, commit, push, or delete files.
-5. Determine the current state of the work, including:
-
-- Work completed during the session.
-- Work that remains incomplete.
-- TODO or FIXME items related to the current work.
-- Known errors, warnings, or validation failures.
-- Uncommitted or untracked files.
-- Database or migration state when relevant.
-
-6. If application code changed and current validation results are not already known, run the standard validation sequence:
-
-- `npm run prisma:validate`
-- `npm run lint`
-- `npm run format:check`
-- `npm run build`
-
-7. Run relevant targeted tests when they exist.
-8. Identify the most logical next development step based only on the current repository state and work performed.
-9. Finish with a concise handoff report containing:
-
-- Completed work.
-- Current Git state.
-- Validation status.
-- Unfinished work or known issues.
-- Recommended next step.
-
-An end-of-session review is read-only. Report problems without fixing them unless explicitly requested.
+1. Inspect Git status, staged and unstaged changes, and untracked files.
+2. Review commits from the development session when they can be identified reliably.
+3. Determine completed and incomplete work, related TODO/FIXME items, known errors or warnings, validation failures, and relevant database/migration state.
+4. Run the standard validation sequence if application code changed and current validation results are not already known. Run relevant targeted tests.
+5. Verify that canonical TODO states reflect the current repository state and agree with their sections. Report discrepancies without editing TODO.md.
+6. Identify the highest-priority unfinished RR item and recommend the most logical next development step based on repository evidence.
+7. Finish with a concise handoff covering completed work, Git state, validation status, unfinished work or known issues, and the recommended next step.
 
 ## Repository Health Check
 
-When asked to perform a repository health check:
+A repository health check is strictly read-only. Do not modify repository files or TODO.md, stage,
+commit, push, delete files, change dependencies, apply migrations, change persistent data, or alter
+Docker infrastructure or container lifecycle.
 
-1. Inspect the repository without modifying files.
-2. Inspect `git status` and report uncommitted or untracked work.
-3. Run the standard validation sequence:
-    - `npm run prisma:validate`
-    - `npm run lint`
-    - `npm run format:check`
-    - `npm run build`
-4. Run `git diff --check`.
-5. Inspect relevant project configuration and source code for:
-    - TODO and FIXME items.
-    - Type-safety concerns.
-    - Obvious dead or duplicated code.
-    - Debugging code that appears unintentionally retained.
-    - Dependency or configuration concerns.
-    - Prisma schema and migration concerns.
-    - Docker configuration concerns.
-    - Missing or outdated documentation.
-    - Obvious security concerns such as exposed secrets or unsafe configuration.
-6. Check Prisma migration status when the database is available.
-7. Inspect Docker service status when Docker is available.
-8. Do not install, remove, or upgrade dependencies.
-9. Do not apply migrations, modify database data, or change Docker infrastructure.
-10. Do not modify, stage, commit, push, or delete files.
-11. Do not treat speculative improvements or personal style preferences as defects.
-12. Prioritize findings as:
-    - Critical
-    - High
-    - Medium
-    - Low
-13. Finish with a concise report containing:
-    - Validation results.
-    - Git state.
-    - Database and Docker status when checked.
-    - Findings grouped by severity.
-    - Recommended actions in priority order.
-    - Final repository health: `HEALTHY`, `NEEDS ATTENTION`, or `UNHEALTHY`.
-
-A repository health check is read-only. Report findings without fixing them unless explicitly requested.
+1. Inspect Git status and report uncommitted and untracked work.
+2. Run the standard validation sequence, relevant targeted tests, and `git diff --check`.
+3. Inspect relevant configuration and source for TODO/FIXME items, type-safety concerns, obvious dead or duplicated code, accidental debugging artifacts, dependency/configuration concerns, Prisma/migration concerns, Docker configuration concerns, missing or outdated documentation, and obvious security issues.
+4. Check Prisma migration status when the database is available and inspect Docker status when Docker is available.
+5. Compare findings against TODO.md and identify matching RR items. Recommend additions or updates only when directly supported by repository evidence; do not change an item's state merely because it was rediscovered.
+6. Do not treat speculative improvements or personal style preferences as defects.
+7. Group findings as Critical, High, Medium, or Low.
+8. Finish with validation results, Git state, database/Docker status when checked, severity-grouped findings, prioritized recommended actions, recommended TODO additions or updates, and `HEALTHY`, `NEEDS ATTENTION`, or `UNHEALTHY`.
