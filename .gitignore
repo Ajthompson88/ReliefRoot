@@ -38,6 +38,6 @@ pnpm-debug.log*
 
 # Prisma
 /generated/prisma
-EOF
+
 
 apps/api/src/generated/
