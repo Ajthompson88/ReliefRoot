@@ -20,6 +20,7 @@ type LoginData = {
 
 export async function registerUser(data: RegisterData) {
     const normalizedEmail = data.email.trim().toLowerCase();
+    const normalizedUsername = data.username?.trim() || null;
 
     const existingUser = await prisma.user.findUnique({
         where: {
@@ -34,10 +35,10 @@ export async function registerUser(data: RegisterData) {
         throw new ApiError(409, "A user with that email already exists.");
     }
 
-    if (data.username) {
+    if (normalizedUsername) {
         const existingUsername = await prisma.user.findUnique({
             where: {
-                username: data.username,
+                username: normalizedUsername,
             },
             select: {
                 id: true,
@@ -63,7 +64,7 @@ export async function registerUser(data: RegisterData) {
         const user = await tx.user.create({
             data: {
                 email: normalizedEmail,
-                username: data.username?.trim() || null,
+                username: normalizedUsername,
                 firstName: data.firstName.trim(),
                 lastName: data.lastName?.trim() || null,
                 passwordHash,

@@ -48,7 +48,7 @@ jobs:
             - name: Build
               run: npm run build
 
-            - name: Run Cultivar Regression Tests
+            - name: Run Integration Tests
               env:
                   SESSION_SECRET: ci-test-session-secret
-              run: node --import tsx --test apps/api/tests/cultivar.integration.test.ts
+              run: node --import tsx --test apps/api/tests/*.test.ts

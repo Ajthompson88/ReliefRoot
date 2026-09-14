@@ -14,19 +14,6 @@ None.
 
 ## Planned
 
-### TODO RR-003 [PLANNED]: Normalize registration usernames before duplicate checks
-
-Priority: Medium
-
-Registration checks the original username for duplicates but stores its trimmed value. A padded
-duplicate can bypass the check and produce HTTP 500 instead of a conflict response.
-
-Acceptance criteria:
-
-- [ ] Use the same normalized username for duplicate checking and persistence.
-- [ ] Return HTTP 409 for a duplicate username, including surrounding-whitespace variants.
-- [ ] Preserve optional username behavior and verify relevant validation passes.
-
 ### TODO RR-004 [PLANNED]: Restrict development PostgreSQL network exposure
 
 Priority: Medium
@@ -238,3 +225,29 @@ Implementation notes:
   Prisma validation, lint, formatting, build, and git diff --check pass.
 - Tests use in-memory Prisma doubles and do not verify live PostgreSQL persistence or concurrent
   cultivar deletion. Validation rules and the test command are documented in docs/api/write-validation.md.
+
+### TODO RR-003 [COMPLETED]: Normalize registration usernames before duplicate checks
+
+Priority: Medium
+
+Registration checks the original username for duplicates but stores its trimmed value. A padded
+duplicate can bypass the check and produce HTTP 500 instead of a conflict response.
+
+Acceptance criteria:
+
+- [x] Use the same normalized username for duplicate checking and persistence.
+- [x] Return HTTP 409 for a duplicate username, including surrounding-whitespace variants.
+- [x] Preserve optional username behavior and verify relevant validation passes.
+
+Implementation notes:
+
+- Registration normalizes an optional username once before duplicate lookup and persistence, ensuring
+  both operations use the same trimmed value.
+
+- Added HTTP regression coverage for trimmed username persistence, surrounding-whitespace duplicate
+  detection returning 409, and registration without a username.
+
+- Authentication regression tests use real routes, validation middleware, controllers, and services
+  with in-memory Prisma doubles and do not modify development data.
+
+- Prisma validation, lint, build, git diff --check, and the full integration suite pass (20 tests).
