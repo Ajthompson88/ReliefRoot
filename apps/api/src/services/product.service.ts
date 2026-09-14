@@ -1,6 +1,19 @@
 import { AcquisitionType, ProductType } from "../generated/prisma/enums.js";
 
 import prisma from "../lib/prisma.js";
+import { ApiError } from "../utils/apiError.js";
+
+async function validateCultivarReference(cultivarId?: string | null) {
+    if (cultivarId === undefined || cultivarId === null) return;
+
+    const cultivar = await prisma.cultivar.findUnique({
+        where: { id: cultivarId },
+        select: { id: true },
+    });
+    if (!cultivar) {
+        throw new ApiError(400, "cultivarId must reference an existing cultivar.");
+    }
+}
 
 type ProductData = {
     name: string;
@@ -62,6 +75,8 @@ export async function getAllProducts(organizationId: string) {
 }
 
 export async function createProduct(data: ProductData, organizationId: string) {
+    await validateCultivarReference(data.cultivarId);
+
     return prisma.product.create({
         data: {
             ...data,
@@ -97,6 +112,8 @@ export async function updateProduct(
     if (!existingProduct) {
         return null;
     }
+
+    await validateCultivarReference(data.cultivarId);
 
     return prisma.product.update({
         where: {

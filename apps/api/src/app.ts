@@ -3,11 +3,15 @@ import express from "express";
 import { sessionMiddleware } from "./config/session.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { notFoundHandler } from "./middleware/notFound.middleware.js";
+import { writeBodyErrors } from "./middleware/writeValidation.middleware.js";
 import routes from "./routes/index.js";
 
 const app = express();
 
 app.use(express.json());
+app.use("/api/v1/products", writeBodyErrors(true));
+app.use("/api/v1/cultivars", writeBodyErrors(true));
+app.use("/api/v1/organizations", writeBodyErrors(false));
 app.use(sessionMiddleware);
 
 app.use("/api/v1", routes);

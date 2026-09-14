@@ -14,20 +14,6 @@ None.
 
 ## Planned
 
-### TODO RR-002 [PLANNED]: Validate product, cultivar, and organization writes
-
-Priority: Medium
-
-Write endpoints pass unvalidated request data to services and Prisma. Invalid types can produce HTTP
-500 responses, and product weights and percentages lack range checks.
-
-Acceptance criteria:
-
-- [ ] Validate required fields, types, and allowed values for supported create and update operations.
-- [ ] Validate product numeric ranges and referenced cultivar IDs.
-- [ ] Return consistent client errors for invalid input before attempting writes.
-- [ ] Verify valid writes and partial updates remain supported and relevant validation passes.
-
 ### TODO RR-003 [PLANNED]: Normalize registration usernames before duplicate checks
 
 Priority: Medium
@@ -154,6 +140,39 @@ Acceptance criteria:
 - [ ] Relevant authentication/session regression tests pass.
 - [ ] Standard validation passes.
 
+### TODO RR-011 [PLANNED]: Review CI dependency-install security
+
+Priority: Medium
+
+SonarCloud reports that the CI dependency installation permits package
+lifecycle scripts to execute during `npm ci`. Determine whether lifecycle
+scripts are required by the current build before changing installation
+behavior.
+
+Acceptance criteria:
+
+- [ ] Identify repository dependencies or project scripts that require lifecycle scripts during CI installation.
+- [ ] Determine whether `npm ci --ignore-scripts` is compatible with the current Prisma generation and build workflow.
+- [ ] Prevent unnecessary package lifecycle-script execution during CI when it can be done safely.
+- [ ] Preserve successful dependency installation, Prisma generation, linting, formatting checks, and build.
+- [ ] Verify the resulting CI workflow passes.
+- [ ] Resolve or appropriately disposition the corresponding SonarCloud security finding.
+
+### TODO RR-012 [PLANNED]: Reduce unnecessary Express information disclosure
+
+Priority: Low
+
+SonarCloud reports that the Express application exposes framework version
+information through its default response headers.
+
+Acceptance criteria:
+
+- [ ] Disable unnecessary Express framework-identification headers.
+- [ ] Verify normal API responses remain unchanged apart from the removed identification header.
+- [ ] Add or update relevant regression coverage if appropriate.
+- [ ] Verify standard project validation passes.
+- [ ] Resolve the corresponding SonarCloud security finding.
+
 ## Blocked
 
 None.
@@ -188,3 +207,34 @@ Implementation notes:
   regression checks pass. The pre-existing `AGENTS.md` formatting issue was resolved with
   whitespace-only changes; all RR-001 acceptance criteria are satisfied.
 - Access policy and test limitations are documented in `docs/api/cultivars.md`.
+
+### RR-002 [COMPLETED]: Validate product, cultivar, and organization writes
+
+Priority: Medium
+
+Write endpoints pass unvalidated request data to services and Prisma. Invalid types can produce HTTP
+500 responses, and product weights and percentages lack range checks.
+
+Acceptance criteria:
+
+- [x] Validate required fields, types, and allowed values for supported create and update operations.
+- [x] Validate product numeric ranges and referenced cultivar IDs.
+- [x] Return consistent client errors for invalid input before attempting writes.
+- [x] Verify valid writes and partial updates remain supported and relevant validation passes.
+
+Implementation notes:
+
+- Create/update middleware validates JSON-object bodies, required names, enum values, nullable product
+  fields, and finite numeric ranges. Percentages accept 0 through 100; package weight accepts zero
+  through values below 1e35 to fit the existing Decimal(65,30) column. Null characters are rejected.
+- Product services check supplied cultivar references before writes. PATCH preserves omitted fields,
+  supports empty objects, and accepts explicit null for nullable fields. Existing authentication,
+  ADMIN authorization, organization isolation, field allowlists, and public reads remain in place.
+- Malformed JSON and primitive bodies return 400 through parser-error handling limited to these
+  create/update paths. Broader parser handling remains outside this task. Organization creation is
+  through registration, which retains its existing organizationName validation.
+- Added focused HTTP regression coverage in apps/api/tests/writeValidation.integration.test.ts.
+  Both this suite and the unchanged RR-001 suite pass (16 reported tests total). Test type-checking,
+  Prisma validation, lint, formatting, build, and git diff --check pass.
+- Tests use in-memory Prisma doubles and do not verify live PostgreSQL persistence or concurrent
+  cultivar deletion. Validation rules and the test command are documented in docs/api/write-validation.md.

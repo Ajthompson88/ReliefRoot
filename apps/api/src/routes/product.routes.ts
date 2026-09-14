@@ -8,6 +8,10 @@ import {
     removeProduct,
 } from "../controllers/product.controller.js";
 import { requireAuth, loadAuthenticatedUser } from "../middleware/auth.middleware.js";
+import {
+    validateCreateProduct,
+    validateUpdateProduct,
+} from "../middleware/writeValidation.middleware.js";
 
 const router = Router();
 
@@ -15,8 +19,8 @@ router.use(requireAuth, loadAuthenticatedUser);
 
 router.get("/", getProducts);
 router.get("/:id", getProduct);
-router.post("/", postProduct);
-router.patch("/:id", patchProduct);
+router.post("/", validateCreateProduct, postProduct);
+router.patch("/:id", validateUpdateProduct, patchProduct);
 router.delete("/:id", removeProduct);
 
 export default router;
