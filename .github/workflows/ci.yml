@@ -36,6 +36,9 @@ jobs:
             - name: Generate Prisma Client
               run: npm run prisma:generate
 
+            - name: Validate Prisma Schema
+              run: npm run prisma:validate
+
             - name: Lint
               run: npm run lint
 
@@ -44,3 +47,6 @@ jobs:
 
             - name: Build
               run: npm run build
+
+            - name: Run Cultivar Regression Tests
+              run: node --import tsx --test apps/api/tests/cultivar.integration.test.ts
