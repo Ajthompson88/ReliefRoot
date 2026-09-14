@@ -14,21 +14,6 @@ None.
 
 ## Planned
 
-### TODO RR-004 [PLANNED]: Restrict development PostgreSQL network exposure
-
-Priority: Medium
-
-Docker Compose publishes PostgreSQL on all host interfaces using the default development password.
-Restrict the development port to localhost to remove unintended network exposure.
-
-Acceptance criteria:
-
-- [ ] Bind the published PostgreSQL port to localhost.
-- [ ] Verify local database access still works and the port is not published on all interfaces.
-- [ ] Document the local-only development configuration and verify relevant configuration checks pass.
-
-Implementation requires approval for Docker infrastructure changes under AGENTS.md.
-
 ### TODO RR-005 [PLANNED]: Add executable automated regression tests
 
 Priority: Medium
@@ -166,7 +151,7 @@ None.
 
 ## Completed
 
-### RR-001 [COMPLETED]: Protect cultivar write endpoints
+### TODO RR-001 [COMPLETED]: Protect cultivar write endpoints
 
 Priority: High
 
@@ -195,7 +180,7 @@ Implementation notes:
   whitespace-only changes; all RR-001 acceptance criteria are satisfied.
 - Access policy and test limitations are documented in `docs/api/cultivars.md`.
 
-### RR-002 [COMPLETED]: Validate product, cultivar, and organization writes
+### TODO RR-002 [COMPLETED]: Validate product, cultivar, and organization writes
 
 Priority: Medium
 
@@ -251,3 +236,24 @@ Implementation notes:
   with in-memory Prisma doubles and do not modify development data.
 
 - Prisma validation, lint, build, git diff --check, and the full integration suite pass (20 tests).
+
+### TODO RR-004 [COMPLETED]: Restrict development PostgreSQL network exposure
+
+Priority: Medium
+
+Docker Compose publishes PostgreSQL on all host interfaces using the default development password.
+Restrict the development port to localhost to remove unintended network exposure.
+
+Acceptance criteria:
+
+- [x] Bind the published PostgreSQL port to localhost.
+- [x] Verify local database access still works and the port is not published on all interfaces.
+- [x] Document the local-only development configuration and verify relevant configuration checks pass.
+
+Implementation requires approval for Docker infrastructure changes under AGENTS.md.
+
+Implementation notes:
+
+- Docker Compose publishes PostgreSQL as `127.0.0.1:5433:5432`, restricting the development database port to the local host.
+- `docker compose config` confirms `host_ip: 127.0.0.1`, and the running container reports `127.0.0.1:5433->5432/tcp`.
+- Prisma validation passes and migrations are up to date, confirming local database access remains functional.
