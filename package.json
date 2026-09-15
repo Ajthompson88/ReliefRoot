@@ -11,6 +11,7 @@
         "build": "tsc -p apps/api/tsconfig.api.json",
         "lint": "eslint",
         "format": "prettier --write .",
+        "test": "tsx --test apps/api/tests/*.test.ts",
         "format:check": "prettier --check .",
         "prepare": "husky",
         "docker:up": "docker compose -f docker/docker-compose.yml up -d",

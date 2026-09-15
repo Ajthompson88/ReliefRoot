@@ -14,23 +14,6 @@ None.
 
 ## Planned
 
-### TODO RR-005 [PLANNED]: Add executable automated regression tests
-
-Priority: Medium
-
-The repository has focused cultivar access-control regression tests but no npm test script.
-Authentication flows and organization isolation still lack automated regression coverage.
-
-Acceptance criteria:
-
-- [ ] Provide an npm test script that runs executable tests and exits unsuccessfully on failures.
-- [ ] Cover authentication, organization isolation, and rejection of unauthorized cultivar writes.
-- [ ] Cover invalid write payloads and username normalization behavior.
-- [ ] Keep tests repeatable and isolated from existing development data.
-- [ ] Verify the tests and standard project validation pass.
-
-Prefer existing dependencies; obtain approval before adding a test dependency.
-
 ### TODO RR-006 [PLANNED]: Complete and refresh development documentation
 
 Priority: Low
@@ -257,3 +240,21 @@ Implementation notes:
 - Docker Compose publishes PostgreSQL as `127.0.0.1:5433:5432`, restricting the development database port to the local host.
 - `docker compose config` confirms `host_ip: 127.0.0.1`, and the running container reports `127.0.0.1:5433->5432/tcp`.
 - Prisma validation passes and migrations are up to date, confirming local database access remains functional.
+
+### TODO RR-005 [COMPLETED]: Add executable automated regression tests
+
+Priority: Medium
+
+The repository now exposes its existing integration regression suite through the root npm test script.
+Coverage includes authentication behavior, organization isolation, cultivar access control, write validation,
+and username normalization without writing to existing development data.
+
+Acceptance criteria:
+
+- [x] Provide an npm test script that runs executable tests and exits unsuccessfully on failures.
+- [x] Cover authentication, organization isolation, and rejection of unauthorized cultivar writes.
+- [x] Cover invalid write payloads and username normalization behavior.
+- [x] Keep tests repeatable and isolated from existing development data.
+- [x] Verify the tests and standard project validation pass.
+
+Prefer existing dependencies; obtain approval before adding a test dependency.
