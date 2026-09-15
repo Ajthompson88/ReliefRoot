@@ -4,6 +4,10 @@ import { SessionMethod } from "../generated/prisma/enums.js";
 
 const validSessionMethods = new Set(Object.values(SessionMethod));
 
+function isValidId(value: unknown): value is string {
+    return typeof value === "string" && value.trim().length > 0 && !value.includes("\0");
+}
+
 function hasDuplicateIds(items: Array<{ metricId?: string; effectId?: string }>) {
     const ids = items
         .map((item) => item.metricId ?? item.effectId)
@@ -13,28 +17,12 @@ function hasDuplicateIds(items: Array<{ metricId?: string; effectId?: string }>)
 }
 
 export const validateCreateSession: RequestHandler = (req, res, next) => {
-    const {
-        productId,
-        organizationId,
-        method,
-        startedAt,
-        metrics = [],
-        effects = [],
-    } = req.body ?? {};
+    const { productId, method, startedAt, metrics = [], effects = [] } = req.body ?? {};
 
-    if (!productId) {
+    if (!isValidId(productId)) {
         res.status(400).json({
             success: false,
-            message: "productId is required.",
-        });
-
-        return;
-    }
-
-    if (!organizationId) {
-        res.status(400).json({
-            success: false,
-            message: "organizationId is required.",
+            message: "productId must be a non-empty string.",
         });
 
         return;
@@ -77,7 +65,11 @@ export const validateCreateSession: RequestHandler = (req, res, next) => {
     }
 
     for (const metric of metrics) {
-        if (!metric.metricId) {
+        if (
+            typeof metric !== "object" ||
+            metric === null ||
+            !isValidId((metric as { metricId?: unknown }).metricId)
+        ) {
             res.status(400).json({
                 success: false,
                 message: "Each metric must include metricId.",
@@ -104,7 +96,11 @@ export const validateCreateSession: RequestHandler = (req, res, next) => {
     }
 
     for (const effect of effects) {
-        if (!effect.effectId) {
+        if (
+            typeof effect !== "object" ||
+            effect === null ||
+            !isValidId((effect as { effectId?: unknown }).effectId)
+        ) {
             res.status(400).json({
                 success: false,
                 message: "Each effect must include effectId.",
@@ -149,7 +145,15 @@ export const validateCreateSession: RequestHandler = (req, res, next) => {
 };
 
 export const validateUpdateSession: RequestHandler = (req, res, next) => {
-    const { method, startedAt, metrics, effects } = req.body ?? {};
+    const { productId, method, startedAt, metrics, effects } = req.body ?? {};
+    if (productId !== undefined && !isValidId(productId)) {
+        res.status(400).json({
+            success: false,
+            message: "productId must be a non-empty string.",
+        });
+
+        return;
+    }
 
     if (method !== undefined && !validSessionMethods.has(method)) {
         res.status(400).json({
@@ -180,7 +184,11 @@ export const validateUpdateSession: RequestHandler = (req, res, next) => {
         }
 
         for (const metric of metrics) {
-            if (!metric.metricId) {
+            if (
+                typeof metric !== "object" ||
+                metric === null ||
+                !isValidId((metric as { metricId?: unknown }).metricId)
+            ) {
                 res.status(400).json({
                     success: false,
                     message: "Each metric must include metricId.",
@@ -227,7 +235,11 @@ export const validateUpdateSession: RequestHandler = (req, res, next) => {
         }
 
         for (const effect of effects) {
-            if (!effect.effectId) {
+            if (
+                typeof effect !== "object" ||
+                effect === null ||
+                !isValidId((effect as { effectId?: unknown }).effectId)
+            ) {
                 res.status(400).json({
                     success: false,
                     message: "Each effect must include effectId.",

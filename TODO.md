@@ -29,23 +29,6 @@ Acceptance criteria:
 - [ ] Preserve historical sprint notes while clearly distinguishing the current state.
 - [ ] Verify documented commands and paths against the repository and check changed Markdown formatting.
 
-### TODO RR-007 [PLANNED]: Correct session payload validation
-
-Priority: Medium
-
-Session creation requires a request-body organizationId even though the controller derives ownership
-from the authenticated user. Null metric and effect entries throw TypeError instead of returning a
-client error, and an object-valued productId passes update validation. These cases were reproduced
-without database writes during the health check.
-
-Acceptance criteria:
-
-- [ ] Remove the requirement for a request-body organizationId and preserve authenticated ownership.
-- [ ] Validate supported session field types, including productId, before service or Prisma calls.
-- [ ] Reject null or invalid metric/effect entries with consistent HTTP 400 responses.
-- [ ] Verify valid session creation and partial updates remain supported without a body organizationId.
-- [ ] Add relevant regression coverage and verify the tests and standard project validation pass.
-
 ### TODO RR-008 [PLANNED]: Preserve client responses for request-body parsing errors
 
 Priority: Medium
@@ -258,3 +241,20 @@ Acceptance criteria:
 - [x] Verify the tests and standard project validation pass.
 
 Prefer existing dependencies; obtain approval before adding a test dependency.
+
+### TODO RR-007 [COMPLETED]: Correct session payload validation
+
+Priority: Medium
+
+Session creation requires a request-body organizationId even though the controller derives ownership
+from the authenticated user. Null metric and effect entries throw TypeError instead of returning a
+client error, and an object-valued productId passes update validation. These cases were reproduced
+without database writes during the health check.
+
+Acceptance criteria:
+
+- [x] Remove the requirement for a request-body organizationId and preserve authenticated ownership.
+- [x] Validate supported session field types, including productId, before service or Prisma calls.
+- [x] Reject null or invalid metric/effect entries with consistent HTTP 400 responses.
+- [x] Verify valid session creation and partial updates remain supported without a body organizationId.
+- [x] Add relevant regression coverage and verify the tests and standard project validation pass.
