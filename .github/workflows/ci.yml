@@ -15,17 +15,17 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
 
         env:
             DATABASE_URL: postgresql://ci:ci@localhost:5432/reliefroot_ci
 
         steps:
             - name: Checkout Repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Setup Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v5
               with:
                   node-version: 22
                   cache: npm
@@ -51,4 +51,4 @@ jobs:
             - name: Run Integration Tests
               env:
                   SESSION_SECRET: ci-test-session-secret
-              run: node --import tsx --test apps/api/tests/*.test.ts
+              run: npm test
