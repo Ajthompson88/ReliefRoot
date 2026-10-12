@@ -117,6 +117,29 @@ None.
 
 ## Completed
 
+### TODO RR-013 [COMPLETED]: Modernize and standardize CI execution
+
+Priority: Medium
+
+The CI workflow used Node-20-based action versions, followed the moving `ubuntu-latest` runner,
+and duplicated the integration-test command instead of using the repository's canonical test script.
+
+Acceptance criteria:
+
+- [x] Upgrade `actions/checkout` and `actions/setup-node` to versions that use the current action runtime.
+- [x] Pin the hosted runner to `ubuntu-24.04`.
+- [x] Retain Node 22 as the tested application runtime.
+- [x] Run the integration suite through the root `npm test` script used by developers.
+- [x] Preserve Prisma generation and validation, linting, formatting checks, and the TypeScript build.
+
+Implementation notes:
+
+- CI now uses `actions/checkout@v5` and `actions/setup-node@v5` while explicitly retaining
+  `node-version: 22` for ReliefRoot.
+- The workflow is pinned to `ubuntu-24.04` so future changes to `ubuntu-latest` do not silently
+  alter the build environment.
+- The integration-test step now runs `npm test`, keeping local and CI verification aligned.
+
 ### TODO RR-001 [COMPLETED]: Protect cultivar write endpoints
 
 Priority: High
