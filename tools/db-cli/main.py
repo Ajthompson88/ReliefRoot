@@ -164,6 +164,7 @@ def view_database_statistics():
             WHERE table_schema = 'public'
             AND table_type = 'BASE TABLE'
             AND table_name != '_prisma_migrations'
+            AND table_name != 'session'
             ORDER BY table_name;
         """)
 
