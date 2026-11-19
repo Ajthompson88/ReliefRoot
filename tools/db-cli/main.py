@@ -152,6 +152,47 @@ def search_records():
         else:
             print(f"Table '{table_name}' does not exist.")
 
+
+def view_database_statistics():
+    print("\nReliefRoot Database Statistics")
+    print("-" * 30)
+
+    with connect_to_database() as connection, connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+            AND table_type = 'BASE TABLE'
+            AND table_name != '_prisma_migrations'
+            ORDER BY table_name;
+        """)
+
+        tables = cursor.fetchall()
+
+        print(f"Total Tables: {len(tables)}")
+
+        total_records = 0
+
+        print(f"\n{'Table Name':<25} {'Records':>10}")
+        print("-" * 36)
+
+        for table in tables:
+            table_name = table[0]
+
+            query = sql.SQL("SELECT COUNT(*) FROM {};").format(
+                sql.Identifier(table_name)
+            )
+
+            cursor.execute(query)
+            record_count = cursor.fetchone()[0]
+
+            print(f"{table_name:<25} {record_count:>10}")
+            total_records += record_count
+
+        print("-" * 36)
+        print(f"Total Records: {total_records}")
+
+
 def handle_choice(selected_option):
     if selected_option == "1":
         print("Listing database tables...")
@@ -166,7 +207,7 @@ def handle_choice(selected_option):
         search_records()
 
     elif selected_option == "4":
-        print("Viewing database statistics...")
+        view_database_statistics()
 
     elif selected_option == "5":
         print("Exiting...")
