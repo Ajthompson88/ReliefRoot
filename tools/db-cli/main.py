@@ -1,8 +1,9 @@
-from multiprocessing.dummy import connection
 import os
 import psycopg
+from psycopg import sql
 from dotenv import load_dotenv
 from pathlib import Path
+from decimal import Decimal
 
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(env_path)
@@ -42,10 +43,42 @@ def list_tables():
       """)
       tables = cursor.fetchall()
 
-
   print("Database tables:")
   for table in tables:
     print(f" - {table[0]}")
+
+def view_records():
+  print("View table records")
+  table_name = input("Enter table name: ")
+  with connect_to_database() as connection, connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+            AND table_name = %s;
+          """, (table_name,))
+        result = cursor.fetchone()
+        if result:
+          print(f"Table '{table_name}' found!")
+          query = sql.SQL("SELECT * FROM {} LIMIT 10;").format(
+          sql.Identifier(table_name))
+          cursor.execute(query)
+          records = cursor.fetchall()
+          column_names = [column.name for column in cursor.description]
+
+          if records:
+            for record_number, record in enumerate(records, start=1):
+              print(f"\nRecord {record_number}:")
+
+              for column_name, value in zip(column_names, record):
+                if isinstance(value, Decimal):
+                  value = f"{value:.2f}"
+
+                print(f"  {column_name}: {value}")
+          else:
+                print(f"No records found in '{table_name}'.")
+        else:
+          print(f"Table '{table_name}' does not exist.")
 
 def handle_choice(selected_option):
   if selected_option == "1":
@@ -54,6 +87,7 @@ def handle_choice(selected_option):
 
   elif selected_option == "2":
     print("Viewing records from a table...")
+    view_records()
 
   elif selected_option == "3":
     print("Searching records...")
