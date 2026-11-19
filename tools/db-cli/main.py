@@ -96,6 +96,62 @@ def view_records():
             print(f"Table '{table_name}' does not exist.")
 
 
+def search_records():
+    print("Search database records")
+    table_name = input("Enter table name: ")
+
+    with connect_to_database() as connection, connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+            AND table_name = %s;
+        """, (table_name,))
+
+        result = cursor.fetchone()
+
+        if result:
+            print(f"Table '{table_name}' found!")
+            column_name = input("Enter column name: ")
+
+            cursor.execute("""
+                SELECT column_name, data_type
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                AND table_name = %s
+                AND column_name = %s;
+            """, (table_name, column_name))
+
+            column_result = cursor.fetchone()
+
+            if column_result:
+                print(f"Column '{column_name}' found in table '{table_name}'!")
+                search_value = input("Enter search value: ")
+
+
+                query = sql.SQL(
+                    "SELECT * FROM {} WHERE {}::text ILIKE %s LIMIT 10;"
+                ).format(
+                    sql.Identifier(table_name),
+                    sql.Identifier(column_name)
+                )
+
+                cursor.execute(query, (f"%{search_value}%",))
+                records = cursor.fetchall()
+
+                column_names = [column.name for column in cursor.description]
+
+                if records:
+                    display_records(records, column_names)
+                else:
+                    print(f"No records found matching '{search_value}'.")
+
+            else:
+                print(f"Column '{column_name}' does not exist in table '{table_name}'.")
+
+        else:
+            print(f"Table '{table_name}' does not exist.")
+
 def handle_choice(selected_option):
     if selected_option == "1":
         print("Listing database tables...")
@@ -107,6 +163,7 @@ def handle_choice(selected_option):
 
     elif selected_option == "3":
         print("Searching records...")
+        search_records()
 
     elif selected_option == "4":
         print("Viewing database statistics...")
