@@ -16,6 +16,8 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+.venv/
+tools/db-cli/.env
 
 # Dependencies
 node_modules/
@@ -41,3 +43,4 @@ pnpm-debug.log*
 
 
 apps/api/src/generated/
+
